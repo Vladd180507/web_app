@@ -17,11 +17,13 @@ public class controler {
     }
 
     @GetMapping("/zalupa")
-    public List<User> zalupa(){
+    public List<User> zalupa() {
         return repository.findAll();
     }
+
     @GetMapping("/zalupa/{username}")
-    public User zalupa(@PathVariable String username){
+    public User zalupa(@PathVariable String username) {
         return repository.findByName(username).orElse(null);
     }
 }
+//jhh
