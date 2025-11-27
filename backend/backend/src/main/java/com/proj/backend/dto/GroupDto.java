@@ -1,6 +1,7 @@
 package com.proj.backend.dto;
 
 import lombok.Data;
+import com.proj.backend.model.Group;
 
 @Data
 public class GroupDto {

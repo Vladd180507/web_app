@@ -24,18 +24,23 @@ public class ActivityLogController {
     private final MembershipRepository membershipRepository; // Pridaj toto, ak treba checkovať spoločné skupiny
 
     @GetMapping("/user/{userId}")
-    public List<ActivityLogResponseDto> getByUser(@PathVariable Long userId,
-                                                  @AuthenticationPrincipal User currentUser) {
-        // Základný check: vlastný user vždy môže vidieť svoje logs
+    public List<ActivityLogResponseDto> getByUser(@PathVariable Long userId) {
+
+        // Тестовый юзер, пока нет токенов
+        User currentUser = userRepository.findById(1L)
+                .orElseThrow(() -> new RuntimeException("Тестовый пользователь не найден"));
+
+        // если смотрит себя
         if (currentUser.getUserId().equals(userId)) {
             return activityLogService.getLogsByUser(userId);
         }
 
-        // Ak nie je vlastný, checkuj či currentUser je admin v aspoň jednej skupine
+        // если он не админ
         if (!currentUser.isGroupAdmin()) {
-            throw new RuntimeException("Nedostatočné práva");
+            throw new RuntimeException("Недостаточно прав");
         }
 
+        return activityLogService.getLogsByUser(userId);
         // Voliteľne: prísnejší check – či je currentUser admin v skupine, kde je target user členom
         // boolean isAdminOverUser = membershipRepository.findByUser_UserId(userId)
         //     .stream()
@@ -44,9 +49,15 @@ public class ActivityLogController {
         // if (!isAdminOverUser) {
         //     throw new RuntimeException("Nedostatočné práva na zobrazenie logov tohto používateľa");
         // }
-
-        return activityLogService.getLogsByUser(userId);
     }
+
+
+
+
+
+
+
+
 
 //    @GetMapping
 //    public List<ActivityLogResponseDto> getAll(@AuthenticationPrincipal User currentUser) {

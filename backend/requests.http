@@ -1,5 +1,227 @@
-### GET request to example server
-GET https://examples.http-client.intellij.net/get
-    ?generated-in=IntelliJ IDEA
+### 1. USERS - Регистрация
+POST http://localhost:8080/api/users/register
+Content-Type: application/json
 
-###
+{
+  "name": "Vlad77illav",
+  "email": "vaaadf@tesjjt.com",
+  "password": "paordg12pp38"
+}
+
+### 2. USERS - Логин
+POST http://localhost:8080/api/users/login
+Content-Type: application/json
+
+{
+  "email": "vaaadf@tesjjt.com",
+  "password": "paordg12pp38"
+}
+
+### 3. USERS - Получить всех
+GET http://localhost:8080/api/users
+
+### 4. USERS - Получить по ID
+GET http://localhost:8080/api/users/2
+
+### 5. GROUPS - Создать группу
+POST http://localhost:8080/api/groups
+Content-Type: application/json
+
+{
+  "name": "Java Group",
+  "description": "Learning Spring iBoot",
+  "createdBy": 2
+}
+
+### 6. GROUPS - Получить все группы
+GET http://localhost:8080/api/groups
+
+### 7. GROUPS - Получить группу по ID
+GET http://localhost:8080/api/groups/2
+
+### 8. MEMBERSHIPS - Добавить пользователя в группу
+POST http://localhost:8080/api/memberships
+Content-Type: application/json
+
+{
+  "userId": 3,
+  "groupId": 2,
+  "role": "MEMBER"
+}
+
+### 9. MEMBERSHIPS - Получить членов группы
+GET http://localhost:8080/api/memberships/groups/1/members
+
+### 10. MEMBERSHIPS - Выйти из группы / удалить пользователя
+DELETE http://localhost:8080/api/memberships
+Content-Type: application/json
+
+{
+  "userId": 2,
+  "groupId": 1,
+  "role": "MEMBER"
+}
+
+### MEMBERSHIPS - Добавить пользователя в группу
+
+POST [http://localhost:8080/api/memberships](http://localhost:8080/api/memberships)
+Content-Type: application/json
+
+{
+  "userId": 2,
+  "groupId": 1,
+  "role": "MEMBER"
+}
+
+### MEMBERSHIPS - Получить участников группы
+
+GET [http://localhost:8080/api/memberships/groups/1/members](http://localhost:8080/api/memberships/groups/1/members)
+
+### MEMBERSHIPS - Выйти из группы (через POST)
+
+POST [http://localhost:8080/api/memberships/leave](http://localhost:8080/api/memberships/leave)
+Content-Type: application/json
+
+{
+  "userId": 2,
+  "groupId": 1,
+  "role": "MEMBER"
+}
+
+### 11. TASKS - Создать задачу
+POST http://localhost:8080/api/tasks
+Content-Type: application/json
+
+{
+  "groupId": 1,
+  "createdBy": 1,
+  "title": "Learn Spring Boot",
+  "description": "Complete tutorial",
+  "status": "OPEN",
+  "deadline": "2025-12-31T23:59:59"
+}
+
+### 12. TASKS - Получить задачи группы
+GET http://localhost:8080/api/tasks/group/1
+
+### 13. RESOURCES - Загрузить ресурс
+POST http://localhost:8080/api/resources
+Content-Type: application/json
+
+{
+  "groupId": 1,
+  "uploadedBy": 1,
+  "title": "Spring Boot Docs",
+  "type": "LINK",
+  "pathOrUrl": "https://spring.io/projects/spring-boot"
+}
+
+### 14. RESOURCES - Получить ресурсы группы
+GET http://localhost:8080/api/resources/group/1
+
+
+###################
+
+### 1. USERS - Регистрация
+POST http://localhost:8080/api/users/register
+Content-Type: application/json
+
+{
+  "name": "vova3",
+  "email": "vova3@test.com",
+  "password": "vova123"
+}
+
+### 2. USERS - Логин
+POST http://localhost:8080/api/users/login
+Content-Type: application/json
+
+{
+  "email": "vova@test.com",
+  "password": "vova123"
+}
+
+### 3. USERS - Получить всех
+GET http://localhost:8080/api/users
+
+### 4. USERS - Получить по ID
+GET http://localhost:8080/api/users/2
+
+### 5. GROUPS - Создать группу
+POST http://localhost:8080/api/groups
+Content-Type: application/json
+
+{
+  "name": "Java Study Group2",
+  "description": "Learning Spring Boot",
+  "createdBy": 1
+}
+
+### 6. GROUPS - Получить все группы
+GET http://localhost:8080/api/groups
+
+### 7. GROUPS - Получить группу по ID
+GET http://localhost:8080/api/groups/3
+
+### 8. MEMBERSHIPS - Добавить пользователя в группу
+POST http://localhost:8080/api/memberships
+Content-Type: application/json
+
+{
+  "userId": 5,
+  "groupId": 3,
+  "role": "ADMIN"
+}
+
+### 9. MEMBERSHIPS - Получить членов группы
+GET http://localhost:8080/api/memberships/groups/3/members
+
+### 10. MEMBERSHIPS - Выйти из группы / удалить пользователя
+DELETE http://localhost:8080/api/memberships/leave
+Content-Type: application/json
+
+{
+  "userId": 2,
+  "groupId": 1,
+  "role": "MEMBER"
+}
+
+### 11. TASKS - Создать задачу
+POST http://localhost:8080/api/groups/3/tasks
+Content-Type: application/json
+
+{
+  "createdBy": 2,
+  "title": "Learn Spring Boot",
+  "description": "Complete tutorial",
+  "status": "OPEN",
+  "deadline": "2025-12-31T23:59:59",
+  "creatorName": "Vladillav"
+}
+
+### 12. TASKS - Получить задачи группы
+GET http://localhost:8080/api/tasks/group/3
+
+### 13. RESOURCES - Загрузить ресурс
+POST http://localhost:8080/api/resources
+Content-Type: application/json
+
+{
+  "groupId": 1,
+  "uploadedBy": 1,
+  "title": "Spring Boot Docs",
+  "type": "LINK",
+  "pathOrUrl": "https://spring.io/projects/spring-boot"
+}
+
+### 14. RESOURCES - Получить ресурсы группы
+GET http://localhost:8080/api/resources/group/1
+
+### Тест: Получить логи по userId (для своего пользователя)
+GET http://localhost:8080/api/activity-logs/user/6
+Content-Type: application/json
+### Получить все логи (только для админа)
+GET http://localhost:8080/api/activity-logs
+Accept: application/json
+
+

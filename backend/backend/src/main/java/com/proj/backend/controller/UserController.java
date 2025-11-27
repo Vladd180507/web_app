@@ -1,37 +1,79 @@
-package com.proj.backend.users;
+package com.proj.backend.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.proj.backend.service.UserService;
+import com.proj.backend.dto.UserDto;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/users")
+@RequiredArgsConstructor
 public class UserController {
 
-    private final UserRepository userRepository;
+    private final UserService userService;
 
-    @Autowired
-    public UserController(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    // ✅ РЕГИСТРАЦИЯ - POST /api/users/register
+    @PostMapping("/register")
+    public ResponseEntity<UserDto> register(@RequestBody Map<String, String> request) {
+        String name = request.get("name");
+        String email = request.get("email");
+        String password = request.get("password");
+
+        UserDto registered = userService.register(name, email, password);
+        return ResponseEntity.status(HttpStatus.CREATED).body(registered);
     }
 
-    // получить список всех пользователей
+    // ✅ ЛОГИН - POST /api/users/login
+    @PostMapping("/login")
+    public ResponseEntity<UserDto> login(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
+        String password = request.get("password");
+
+        UserDto user = userService.login(email, password);
+        return ResponseEntity.ok(user);
+    }
+
+    // ✅ ПОЛУЧИТЬ ВСЕХ ПОЛЬЗОВАТЕЛЕЙ - GET /api/users
     @GetMapping
-    public List<UserDto> getAllUsers() {
-        return userRepository.findAll()
-                .stream()
-                .map(UserDto::fromEntity)
-                .collect(Collectors.toList());
+    public ResponseEntity<List<UserDto>> getAllUsers() {
+        return ResponseEntity.ok(userService.getAllUsers());
     }
 
-    // получить конкретного по имени
-    @GetMapping("/{name}")
-    public ResponseEntity<UserDto> getUserByName(@PathVariable String name) {
-        return userRepository.findByName(name)
-                .map(user -> ResponseEntity.ok(UserDto.fromEntity(user)))
+    // ✅ ПОЛУЧИТЬ ПОЛЬЗОВАТЕЛЯ ПО ID - GET /api/users/1
+    @GetMapping("/{id}")
+    public ResponseEntity<UserDto> getUserById(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.getUserById(id));
+    }
+
+    // ✅ ПОЛУЧИТЬ ПОЛЬЗОВАТЕЛЯ ПО EMAIL - GET /api/users/email/{email}
+    @GetMapping("/email/{email}")
+    public ResponseEntity<UserDto> getUserByEmail(@PathVariable String email) {
+        return userService.getUserByEmail(email)
+                .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    // ✅ ОБНОВИТЬ ПОЛЬЗОВАТЕЛЯ - PUT /api/users/1
+    @PutMapping("/{id}")
+    public ResponseEntity<UserDto> updateUser(
+            @PathVariable Long id,
+            @RequestBody Map<String, String> request) {
+        String name = request.get("name");
+        String email = request.get("email");
+
+        UserDto updated = userService.updateUser(id, name, email);
+        return ResponseEntity.ok(updated);
+    }
+
+    // ✅ УДАЛИТЬ ПОЛЬЗОВАТЕЛЯ - DELETE /api/users/1
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+        userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
     }
 }
