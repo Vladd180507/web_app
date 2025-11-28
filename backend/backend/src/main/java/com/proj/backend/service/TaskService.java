@@ -5,6 +5,7 @@ import com.proj.backend.model.*;
 import com.proj.backend.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,6 +17,7 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final GroupRepository groupRepository;
     private final UserRepository userRepository;
+    private final SimpMessagingTemplate messagingTemplate;
 
     // ================================
     // GET TASKS BY GROUP
@@ -47,7 +49,14 @@ public class TaskService {
                 .deadline(deadlineIso != null ? LocalDateTime.parse(deadlineIso) : null)
                 .build();
 
-        return TaskDto.fromEntity(taskRepository.save(task));
+        Task savedTask = taskRepository.save(task);
+        TaskDto taskDto = TaskDto.fromEntity(savedTask);
+
+        // 🔥 ОТПРАВЛЯЕМ УВЕДОМЛЕНИЕ 🔥
+        // Все, кто подписан на /topic/group/1/tasks, получат этот объект моментально
+        messagingTemplate.convertAndSend("/topic/group/" + groupId + "/tasks", taskDto);
+
+        return taskDto;
     }
 
     // ================================

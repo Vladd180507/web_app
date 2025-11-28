@@ -1,21 +1,49 @@
 package com.proj.backend.controller;
 
+import com.proj.backend.config.JwtCore;
 import com.proj.backend.service.UserService;
 import com.proj.backend.dto.UserDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.Map;
+
 
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class UserController {
-
+    private final AuthenticationManager authenticationManager;
+    private final JwtCore jwtCore;
     private final UserService userService;
+
+    // ✅ ЛОГИН - POST /api/users/login
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
+        String password = request.get("password");
+
+        // 1. Аутентификация через Spring Security (проверит пароль сама)
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(email, password)
+        );
+
+        // 2. Если успех - ставим контекст
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        // 3. Генерируем токен
+        String jwt = jwtCore.generateToken(authentication);
+
+        // 4. Возвращаем токен клиенту
+        return ResponseEntity.ok(jwt); // Или верни JSON { "token": "...", "user": ... }
+    }
 
     // ✅ РЕГИСТРАЦИЯ - POST /api/users/register
     @PostMapping("/register")
@@ -29,14 +57,14 @@ public class UserController {
     }
 
     // ✅ ЛОГИН - POST /api/users/login
-    @PostMapping("/login")
-    public ResponseEntity<UserDto> login(@RequestBody Map<String, String> request) {
-        String email = request.get("email");
-        String password = request.get("password");
-
-        UserDto user = userService.login(email, password);
-        return ResponseEntity.ok(user);
-    }
+//    @PostMapping("/login")
+//    public ResponseEntity<UserDto> login(@RequestBody Map<String, String> request) {
+//        String email = request.get("email");
+//        String password = request.get("password");
+//
+//        UserDto user = userService.login(email, password);
+//        return ResponseEntity.ok(user);
+//    }
 
     // ✅ ПОЛУЧИТЬ ВСЕХ ПОЛЬЗОВАТЕЛЕЙ - GET /api/users
     @GetMapping

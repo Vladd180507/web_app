@@ -1,10 +1,55 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <title>WebSocket Test</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        #messages { border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: scroll; background: #f9f9f9; }
+        .new-task { color: green; font-weight: bold; }
+    </style>
 </head>
 <body>
-$END$
+<h2>Test WebSocket Client</h2>
+<div>
+    Status: <span id="status" style="color:red">Disconnected</span>
+</div>
+<br/>
+<h3>Live Notifications (Group 1):</h3>
+<div id="messages"></div>
+
+<script>
+    var stompClient = null;
+
+    function connect() {
+        // Подключаемся к той точке, которую мы настроили в WebSocketConfig
+        var socket = new SockJS('http://localhost:8080/ws');
+        stompClient = Stomp.over(socket);
+
+        stompClient.connect({}, function (frame) {
+            document.getElementById("status").innerHTML = "Connected ✅";
+            document.getElementById("status").style.color = "green";
+            console.log('Connected: ' + frame);
+
+            // ПОДПИСЫВАЕМСЯ на тему группы №1 (как прописано в TaskService)
+            stompClient.subscribe('/topic/group/4/tasks', function (message) {
+                showMessage(JSON.parse(message.body));
+            });
+        });
+    }
+
+    function showMessage(task) {
+        var messagesDiv = document.getElementById("messages");
+        var p = document.createElement('p');
+        p.className = 'new-task';
+        // Выводим данные, пришедшие с сервера
+        p.innerHTML = "🔔 New Task: " + task.title + " (ID: " + task.taskId + ")";
+        messagesDiv.appendChild(p);
+    }
+
+    // Запускаем подключение сразу при открытии
+    connect();
+</script>
 </body>
 </html>

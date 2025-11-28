@@ -2,6 +2,8 @@ package com.proj.backend.controller;
 
 import com.proj.backend.dto.TaskDto;
 import com.proj.backend.model.TaskStatus;
+import com.proj.backend.model.User;
+import com.proj.backend.repository.UserRepository;
 import com.proj.backend.service.TaskService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +15,7 @@ import java.util.List;
 @RequestMapping("/api/tasks")
 @RequiredArgsConstructor
 public class TaskController {
-
+    private final UserRepository userRepository;
     private final TaskService taskService;
 
     // ================================
@@ -30,18 +32,26 @@ public class TaskController {
     @PostMapping("/group/{groupId}")
     public ResponseEntity<TaskDto> createTask(
             @PathVariable Long groupId,
-            @RequestBody CreateTaskRequest req
+            @RequestBody CreateTaskRequest req,
+            java.security.Principal principal // <--- 1. Добавляем этот параметр
     ) {
+        // 2. Имя пользователя (email) берем из токена, который проверил Spring Security
+        String emailFromToken = principal.getName();
+
+        // 3. Ищем юзера по email из токена, а не по creatorName из JSON
+
+        User creator = userRepository.findByEmail(emailFromToken)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
         TaskDto created = taskService.createTask(
                 groupId,
                 req.title(),
                 req.description(),
                 req.deadline(),
-                req.creatorName()
+                creator.getName() // Передаем уже проверенное имя
         );
         return ResponseEntity.ok(created);
     }
-
     // ================================
     // GET TASK BY ID
     // ================================

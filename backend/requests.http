@@ -224,4 +224,49 @@ Content-Type: application/json
 GET http://localhost:8080/api/activity-logs
 Accept: application/json
 
+###
+POST http://localhost:8080/api/users/register
+Content-Type: application/json
 
+{
+  "name": "Ivan Student",
+  "email": "ivan@example.com",
+  "password": "strongPassword123"
+}
+
+###
+POST http://localhost:8080/api/users/login
+Content-Type: application/json
+
+{
+  "email": "ivan@example.com",
+  "password": "strongPassword123"
+}
+
+###
+GET http://localhost:8080/api/groups
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJpdmFuQGV4YW1wbGUuY29tIiwiaWQiOjcsImlhdCI6MTc2NDM0MjE3MiwiZXhwIjoxNzY0NDI4NTcyfQ.rNI2P4QjBhA8j_J3v-QhgUYgjSeXt2gYfKNV9SmkHsc
+
+###
+POST http://localhost:8080/api/groups
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJpdmFuQGV4YW1wbGUuY29tIiwiaWQiOjcsImlhdCI6MTc2NDM0MjE3MiwiZXhwIjoxNzY0NDI4NTcyfQ.rNI2P4QjBhA8j_J3v-QhgUYgjSeXt2gYfKNV9SmkHsc
+
+
+{
+  "name": "Java Study Group",
+  "description": "Learning Spring Boot",
+  "createdBy": 7
+}
+
+###
+POST http://localhost:8080/api/tasks/group/4
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJpdmFuQGV4YW1wbGUuY29tIiwiaWQiOjcsImlhdCI6MTc2NDM0MjE3MiwiZXhwIjoxNzY0NDI4NTcyfQ.rNI2P4QjBhA8j_J3v-QhgUYgjSeXt2gYfKNV9SmkHsc
+
+{
+  "title": "Test Realtime Task",
+  "description": "If you see this, websocket works!",
+  "deadline": "2025-12-31T23:59:59",
+  "creatorName": "Ivan Student"
+}
