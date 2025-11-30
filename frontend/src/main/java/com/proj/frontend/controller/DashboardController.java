@@ -123,6 +123,34 @@ public class DashboardController {
         }
     }
 
+    // 🔽 НОВЕ: відкриття ресурсів
+
+    @FXML
+    private void handleOpenResources() {
+        Group selected = groupsTable.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            showError("Please select a group first.");
+            return;
+        }
+        openResourcesForGroup(selected);
+    }
+
+    private void openResourcesForGroup(Group group) {
+        try {
+            FXMLLoader loader = new FXMLLoader(App.class.getResource("/fxml/resources.fxml"));
+            Scene scene = new Scene(loader.load());
+
+            ResourcesController controller = loader.getController();
+            controller.init(currentUser, group, backendService, stage);
+
+            stage.setScene(scene);
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            showError("Cannot open resources view: " + e.getMessage());
+        }
+    }
+
     private void showError(String msg) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setHeaderText("Error");

@@ -11,6 +11,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
+
 public class LoginController {
 
     @FXML private TextField emailField;
@@ -61,6 +62,27 @@ public class LoginController {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setHeaderText("Navigation error");
             alert.setContentText("Cannot open dashboard: " + e.getMessage());
+            alert.showAndWait();
+        }
+    }
+
+    @FXML
+    private void handleOpenRegister() {
+        try {
+            FXMLLoader loader = new FXMLLoader(App.class.getResource("/fxml/register.fxml"));
+            Scene scene = new Scene(loader.load());
+
+            RegisterController controller = loader.getController();
+            controller.setBackendService(backendService);
+            controller.setStage(stage);
+
+            stage.setScene(scene);
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText("Navigation error");
+            alert.setContentText("Cannot open register screen: " + e.getMessage());
             alert.showAndWait();
         }
     }

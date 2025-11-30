@@ -18,6 +18,8 @@
             <PasswordField fx:id="passwordField" promptText="Password" maxWidth="200"/>
 
             <Button text="Login" onAction="#handleLogin" maxWidth="200"/>
+            <Button text="Register" onAction="#handleOpenRegister" maxWidth="200"/>
         </VBox>
     </center>
+
 </BorderPane>
