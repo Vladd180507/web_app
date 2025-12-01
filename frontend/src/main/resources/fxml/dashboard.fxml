@@ -44,6 +44,9 @@
             <Button text="Open group tasks" onAction="#handleOpenGroup"/>
             <Button text="Open group resources" onAction="#handleOpenResources"/>
             <Button text="Add group" onAction="#handleAddGroup"/>
+            <Button text="Edit group" onAction="#handleEditGroup"/>
+            <Button text="Delete group" onAction="#handleDeleteGroup"/>
+            <Button text="Members" onAction="#handleOpenMembers"/>
         </HBox>
     </bottom>
 

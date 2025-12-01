@@ -42,6 +42,8 @@
                 <TextField fx:id="descriptionField" promptText="Description" prefWidth="250"/>
                 <DatePicker fx:id="deadlinePicker" promptText="Deadline"/>
                 <Button text="Add task" onAction="#handleAddTask"/>
+                <Button text="Edit task" onAction="#handleEditTask"/>
+                <Button text="Delete task" onAction="#handleDeleteTask"/>
             </HBox>
 
             <HBox spacing="10" alignment="CENTER_LEFT">

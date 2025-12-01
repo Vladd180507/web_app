@@ -13,6 +13,7 @@ public class MockBackendService implements BackendService {
     private List<Task> tasks = new ArrayList<>();
     private List<Resource> resources = new ArrayList<>();
     private List<ActivityLog> logs = new ArrayList<>();
+    private List<Member> members = new ArrayList<>();
 
     private User fakeUser = new User(1L, "Test User", "test@example.com");
 
@@ -35,6 +36,13 @@ public class MockBackendService implements BackendService {
         addLog(fakeUser.getId(), "LOGIN", "User logged in (mock)");
         addLog(fakeUser.getId(), "CREATE_GROUP", "Initial groups created");
         addLog(fakeUser.getId(), "CREATE_TASK", "Initial tasks created");
+
+        members.add(new Member(1L, 1L, "Alice", "alice@example.com", "ADMIN",
+                LocalDateTime.now().minusDays(5).toString()));
+        members.add(new Member(2L, 1L, "Bob", "bob@example.com", "MEMBER",
+                LocalDateTime.now().minusDays(2).toString()));
+        members.add(new Member(3L, 2L, "Charlie", "charlie@example.com", "MEMBER",
+                LocalDateTime.now().minusDays(1).toString()));
     }
 
     private void addLog(Long userId, String action, String details) {
@@ -135,5 +143,121 @@ public class MockBackendService implements BackendService {
         addLog(fakeUser.getId(), "PROFILE_UPDATE", "User updated profile");
 
         return new User(fakeUser.getId(), fakeUser.getName(), fakeUser.getEmail());
+    }
+
+    @Override
+    public Task updateTask(long taskId, String title, String description, String deadline) {
+        for (Task t : tasks) {
+            if (t.getId() == taskId) {
+                t.setTitle(title);
+                t.setDescription(description);
+                t.setDeadline(deadline);
+
+                addLog(fakeUser.getId(), "UPDATE_TASK", "Updated task " + taskId);
+                return t;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public boolean deleteTask(long taskId) {
+        Task toRemove = null;
+
+        for (Task t : tasks) {
+            if (t.getId() == taskId) {
+                toRemove = t;
+                break;
+            }
+        }
+
+        if (toRemove != null) {
+            tasks.remove(toRemove);
+            addLog(fakeUser.getId(), "DELETE_TASK", "Deleted task " + taskId);
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    public Group updateGroup(long groupId, String name, String description) {
+        for (Group g : groups) {
+            if (g.getId() == groupId) {
+                g.setName(name);
+                g.setDescription(description);
+
+                addLog(fakeUser.getId(), "UPDATE_GROUP",
+                        "Updated group " + groupId + " (" + name + ")");
+                return g;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public boolean deleteGroup(long groupId) {
+        Group toRemove = null;
+        for (Group g : groups) {
+            if (g.getId() == groupId) {
+                toRemove = g;
+                break;
+            }
+        }
+
+        if (toRemove != null) {
+            groups.remove(toRemove);
+
+            // Також приберемо задачі та ресурси цієї групи (щоб не висіли сиротами)
+            tasks.removeIf(t -> t.getGroupId() == groupId);
+            resources.removeIf(r -> r.getGroupId() == groupId);
+
+            addLog(fakeUser.getId(), "DELETE_GROUP",
+                    "Deleted group " + groupId + " (" + toRemove.getName() + ")");
+            return true;
+        }
+
+        return false;   // ← ОЦЕГО РАНІШЕ НЕ ВИСТАЧАЛО
+    }
+
+
+    @Override
+    public List<Member> getMembersByGroup(long groupId) {
+        return members.stream()
+                .filter(m -> m.getGroupId() == groupId)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Member addMemberToGroup(long groupId, String name, String email, String role) {
+        long newUserId = members.size() + 1;
+        String joinedAt = LocalDateTime.now().toString();
+
+        Member m = new Member(newUserId, groupId, name, email, role, joinedAt);
+        members.add(m);
+
+        addLog(fakeUser.getId(), "ADD_MEMBER",
+                "Added member " + name + " to group " + groupId);
+
+        return m;
+    }
+
+    @Override
+    public boolean removeMemberFromGroup(long groupId, long userId) {
+        Member toRemove = null;
+        for (Member m : members) {
+            if (m.getGroupId() == groupId && m.getUserId() == userId) {
+                toRemove = m;
+                break;
+            }
+        }
+
+        if (toRemove != null) {
+            members.remove(toRemove);
+            addLog(fakeUser.getId(), "REMOVE_MEMBER",
+                    "Removed member " + toRemove.getName() + " from group " + groupId);
+            return true;
+        }
+        return false;
     }
 }

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.proj.frontend.controller.MembersController">
+
+    <top>
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+            <Button text="Back" onAction="#handleBack"/>
+            <Label fx:id="groupNameLabel"
+                   text="Members"
+                   style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+        </HBox>
+    </top>
+
+    <center>
+        <TableView fx:id="membersTable">
+            <columns>
+                <TableColumn fx:id="nameColumn" text="Name" prefWidth="150"/>
+                <TableColumn fx:id="emailColumn" text="Email" prefWidth="200"/>
+                <TableColumn fx:id="roleColumn" text="Role" prefWidth="100"/>
+                <TableColumn fx:id="joinedAtColumn" text="Joined at" prefWidth="160"/>
+            </columns>
+        </TableView>
+    </center>
+
+    <bottom>
+        <VBox spacing="10">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Name:"/>
+                <TextField fx:id="nameField" prefWidth="150"/>
+                <Label text="Email:"/>
+                <TextField fx:id="emailField" prefWidth="180"/>
+                <Label text="Role:"/>
+                <ComboBox fx:id="roleCombo" prefWidth="100"/>
+                <Button text="Add member" onAction="#handleAddMember"/>
+            </HBox>
+
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Button text="Remove selected" onAction="#handleRemoveMember"/>
+            </HBox>
+
+        </VBox>
+    </bottom>
+
+</BorderPane>

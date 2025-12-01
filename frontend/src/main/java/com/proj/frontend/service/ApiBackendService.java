@@ -14,6 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import com.proj.frontend.model.ActivityLog;
+import com.proj.frontend.model.Member;
 
 public class ApiBackendService implements BackendService {
 
@@ -201,4 +202,46 @@ public class ApiBackendService implements BackendService {
         return new User(1L, newName, newEmail); // заглушка
     }
 
+    @Override
+    public Task updateTask(long taskId, String title, String description, String deadline) throws Exception {
+        // TODO: реальна інтеграція, коли бекенд буде готовий
+        // Поки повертаємо фейковий Task, щоб фронт працював
+        return new Task(taskId, 0L, title, description, "OPEN", deadline);
+    }
+
+    @Override
+    public boolean deleteTask(long taskId) throws Exception {
+        // TODO: реальна інтеграція з API
+        return true;
+    }
+
+    @Override
+    public Group updateGroup(long groupId, String name, String description) throws Exception {
+        // TODO: реалізувати реальний виклик REST, коли бекенд буде готовий
+        return new Group(groupId, name, description);
+    }
+
+    @Override
+    public boolean deleteGroup(long groupId) throws Exception {
+        // TODO: реальна інтеграція з API (DELETE /groups/{id})
+        return true;
+    }
+
+    @Override
+    public List<Member> getMembersByGroup(long groupId) throws Exception {
+        // TODO: реальний виклик API /api/memberships/group/{id} (або подібний)
+        return List.of(); // тимчасово пустий список
+    }
+
+    @Override
+    public Member addMemberToGroup(long groupId, String name, String email, String role) throws Exception {
+        // TODO: POST /api/memberships
+        return new Member(999L, groupId, name, email, role, "2025-01-01T00:00:00");
+    }
+
+    @Override
+    public boolean removeMemberFromGroup(long groupId, long userId) throws Exception {
+        // TODO: DELETE /api/memberships/leave
+        return true;
+    }
 }

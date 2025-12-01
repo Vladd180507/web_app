@@ -218,4 +218,94 @@ public class TasksController {
             showError("Cannot open statistics view: " + e.getMessage());
         }
     }
+
+    @FXML
+    private void handleEditTask() {
+        Task selected = tasksTable.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            showError("Select a task first.");
+            return;
+        }
+
+        // --- Title ---
+        TextInputDialog titleDialog = new TextInputDialog(selected.getTitle());
+        titleDialog.setHeaderText("Edit task");
+        titleDialog.setContentText("New title:");
+        var newTitleOpt = titleDialog.showAndWait();
+        if (newTitleOpt.isEmpty()) return;
+
+        // --- Description ---
+        TextInputDialog descDialog = new TextInputDialog(selected.getDescription());
+        descDialog.setHeaderText("Edit task");
+        descDialog.setContentText("New description:");
+        var newDescOpt = descDialog.showAndWait();
+        if (newDescOpt.isEmpty()) return;
+
+        // --- Deadline ---
+        Dialog<String> deadlineDialog = new Dialog<>();
+        deadlineDialog.setHeaderText("Edit deadline");
+
+        DatePicker picker = new DatePicker();
+        if (selected.getDeadline() != null && !selected.getDeadline().isBlank()) {
+            picker.setValue(LocalDate.parse(selected.getDeadline()));
+        }
+
+        deadlineDialog.getDialogPane().setContent(picker);
+        deadlineDialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+
+        deadlineDialog.setResultConverter(btn -> {
+            if (btn == ButtonType.OK && picker.getValue() != null) {
+                return picker.getValue().toString();
+            }
+            return selected.getDeadline();
+        });
+
+        String newDeadline = deadlineDialog.showAndWait().orElse(selected.getDeadline());
+
+        try {
+            Task updated = backendService.updateTask(
+                    selected.getId(),
+                    newTitleOpt.get(),
+                    newDescOpt.get(),
+                    newDeadline
+            );
+
+            selected.setTitle(updated.getTitle());
+            selected.setDescription(updated.getDescription());
+            selected.setDeadline(updated.getDeadline());
+
+            tasksTable.refresh();
+            updateDeadlineSummary(tasksTable.getItems());
+
+        } catch (Exception e) {
+            showError("Failed to update task: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    private void handleDeleteTask() {
+        Task selected = tasksTable.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            showError("Select a task first.");
+            return;
+        }
+
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setHeaderText("Delete task");
+        confirm.setContentText("Are you sure you want to delete this task?");
+        var result = confirm.showAndWait();
+
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            try {
+                boolean ok = backendService.deleteTask(selected.getId());
+
+                if (ok) {
+                    tasksTable.getItems().remove(selected);
+                    updateDeadlineSummary(tasksTable.getItems());
+                }
+            } catch (Exception e) {
+                showError("Failed to delete task: " + e.getMessage());
+            }
+        }
+    }
 }

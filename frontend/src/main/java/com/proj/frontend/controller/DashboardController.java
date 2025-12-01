@@ -13,6 +13,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
+import javafx.scene.control.ButtonType;
+import com.proj.frontend.controller.MembersController;
 
 import java.util.List;
 import java.util.Optional;
@@ -232,6 +234,96 @@ public class DashboardController {
             stage.show();
         } catch (Exception e) {
             showError("Cannot open profile: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    private void handleEditGroup() {
+        Group selected = groupsTable.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            showError("Please select a group first.");
+            return;
+        }
+
+        TextInputDialog nameDialog = new TextInputDialog(selected.getName());
+        nameDialog.setHeaderText("Edit group");
+        nameDialog.setContentText("New name:");
+        var nameOpt = nameDialog.showAndWait();
+        if (nameOpt.isEmpty() || nameOpt.get().isBlank()) {
+            return;
+        }
+
+        TextInputDialog descDialog = new TextInputDialog(selected.getDescription());
+        descDialog.setHeaderText("Edit group");
+        descDialog.setContentText("New description:");
+        var descOpt = descDialog.showAndWait();
+        if (descOpt.isEmpty()) {
+            return;
+        }
+
+        try {
+            Group updated = backendService.updateGroup(
+                    selected.getId(),
+                    nameOpt.get(),
+                    descOpt.get()
+            );
+
+            if (updated != null) {
+                selected.setName(updated.getName());
+                selected.setDescription(updated.getDescription());
+                groupsTable.refresh();
+            }
+
+        } catch (Exception e) {
+            showError("Failed to update group: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    private void handleDeleteGroup() {
+        Group selected = groupsTable.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            showError("Please select a group first.");
+            return;
+        }
+
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setHeaderText("Delete group");
+        confirm.setContentText("Are you sure you want to delete group '" + selected.getName() + "'?");
+        var result = confirm.showAndWait();
+
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            try {
+                boolean ok = backendService.deleteGroup(selected.getId());
+                if (ok) {
+                    groupsTable.getItems().remove(selected);
+                }
+            } catch (Exception e) {
+                showError("Failed to delete group: " + e.getMessage());
+            }
+        }
+    }
+
+    @FXML
+    private void handleOpenMembers() {
+        Group selected = groupsTable.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            showError("Please select a group first.");
+            return;
+        }
+
+        try {
+            FXMLLoader loader = new FXMLLoader(App.class.getResource("/fxml/members.fxml"));
+            Scene scene = new Scene(loader.load());
+
+            MembersController controller = loader.getController();
+            controller.init(currentUser, selected, backendService, stage);
+
+            stage.setScene(scene);
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            showError("Cannot open members view: " + e.getMessage());
         }
     }
 }
