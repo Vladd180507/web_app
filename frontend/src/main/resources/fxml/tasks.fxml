@@ -25,6 +25,7 @@
                 <TableColumn fx:id="titleColumn" text="Title" prefWidth="160"/>
                 <TableColumn fx:id="descriptionColumn" text="Description" prefWidth="260"/>
                 <TableColumn fx:id="statusColumn" text="Status" prefWidth="100"/>
+                <TableColumn fx:id="deadlineColumn" text="Deadline" prefWidth="120"/>
             </columns>
         </TableView>
     </center>
@@ -39,6 +40,7 @@
                 <Label text="New task:"/>
                 <TextField fx:id="titleField" promptText="Title" prefWidth="150"/>
                 <TextField fx:id="descriptionField" promptText="Description" prefWidth="250"/>
+                <DatePicker fx:id="deadlinePicker" promptText="Deadline"/>
                 <Button text="Add task" onAction="#handleAddTask"/>
             </HBox>
 
@@ -51,6 +53,8 @@
             <HBox spacing="10" alignment="CENTER_LEFT">
                 <Button text="Show statistics" onAction="#handleShowStats"/>
             </HBox>
+
+            <Label fx:id="deadlineSummaryLabel" text=""/>
         </VBox>
     </bottom>
 

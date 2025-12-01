@@ -78,11 +78,17 @@ public class MockBackendService implements BackendService {
     }
 
     @Override
-    public Task createTask(long groupId, String title, String description) {
+    public Task createTask(long groupId, String title, String description, String deadline) {
         long newId = tasks.size() + 1;
-        Task t = new Task(newId, groupId, title, description, "OPEN");
+        Task t = new Task(newId, groupId, title, description, "OPEN", deadline);
         tasks.add(t);
-        addLog(fakeUser.getId(), "CREATE_TASK", "Created task '" + title + "' in group " + groupId);
+
+        String detail = "Created task '" + title + "' in group " + groupId;
+        if (deadline != null && !deadline.isBlank()) {
+            detail += " with deadline " + deadline;
+        }
+
+        addLog(fakeUser.getId(), "CREATE_TASK", detail);
         return t;
     }
 
@@ -119,5 +125,15 @@ public class MockBackendService implements BackendService {
     @Override
     public List<ActivityLog> getActivityLogs() {
         return logs;
+    }
+
+    @Override
+    public User updateUserProfile(String newName, String newEmail) {
+        fakeUser.setName(newName);
+        fakeUser.setEmail(newEmail);
+
+        addLog(fakeUser.getId(), "PROFILE_UPDATE", "User updated profile");
+
+        return new User(fakeUser.getId(), fakeUser.getName(), fakeUser.getEmail());
     }
 }

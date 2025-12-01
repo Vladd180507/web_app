@@ -4,6 +4,8 @@ import com.proj.frontend.App;
 import com.proj.frontend.model.Group;
 import com.proj.frontend.model.User;
 import com.proj.frontend.service.BackendService;
+import com.proj.frontend.service.WebSocketNotificationsClient;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -11,12 +13,15 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
-import com.proj.frontend.controller.ActivityLogController;
 
 import java.util.List;
 import java.util.Optional;
 
 public class DashboardController {
+
+    private static final boolean ENABLE_WEBSOCKET_NOTIFICATIONS = true;
+
+    private WebSocketNotificationsClient notificationsClient;
 
     @FXML
     private TableView<Group> groupsTable;
@@ -43,6 +48,10 @@ public class DashboardController {
 
         setupTable();
         loadGroups();
+
+        if (ENABLE_WEBSOCKET_NOTIFICATIONS) {
+            startNotifications();
+        }
     }
 
     @FXML
@@ -124,8 +133,6 @@ public class DashboardController {
         }
     }
 
-    // 🔽 НОВЕ: відкриття ресурсів
-
     @FXML
     private void handleOpenResources() {
         Group selected = groupsTable.getSelectionModel().getSelectedItem();
@@ -161,6 +168,10 @@ public class DashboardController {
 
     @FXML
     private void handleLogout() {
+        if (notificationsClient != null) {
+            notificationsClient.disconnect();
+        }
+
         try {
             FXMLLoader loader = new FXMLLoader(App.class.getResource("/fxml/login.fxml"));
             Scene scene = new Scene(loader.load());
@@ -192,6 +203,35 @@ public class DashboardController {
         } catch (Exception e) {
             e.printStackTrace();
             showError("Cannot open activity log: " + e.getMessage());
+        }
+    }
+
+    private void startNotifications() {
+        notificationsClient = new WebSocketNotificationsClient(message -> {
+            Platform.runLater(() -> {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setHeaderText("Notification");
+                alert.setContentText(message);
+                alert.show();
+            });
+        });
+
+        notificationsClient.connect();
+    }
+
+    @FXML
+    private void handleProfile() {
+        try {
+            FXMLLoader loader = new FXMLLoader(App.class.getResource("/fxml/profile.fxml"));
+            Scene scene = new Scene(loader.load());
+
+            ProfileController controller = loader.getController();
+            controller.init(currentUser, backendService, stage);
+
+            stage.setScene(scene);
+            stage.show();
+        } catch (Exception e) {
+            showError("Cannot open profile: " + e.getMessage());
         }
     }
 }

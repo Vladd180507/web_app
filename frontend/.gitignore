@@ -1,9 +1,10 @@
-# Maven build
-target/
-
 # IntelliJ IDEA
 .idea/
 *.iml
 
 # Logs
 *.log
+
+# Maven build
+target/
+*/target/

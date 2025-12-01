@@ -6,16 +6,28 @@ public class Task {
     private String title;
     private String description;
     private String status;
+    private String deadline; // YYYY-MM-DD або null
 
-    public Task() {}
+    public Task() {
+    }
 
+    // Старий конструктор (без дедлайну) – щоб нічого не зламати
     public Task(Long id, Long groupId, String title, String description, String status) {
         this.id = id;
         this.groupId = groupId;
         this.title = title;
         this.description = description;
         this.status = status;
+        this.deadline = null;
     }
+
+    // Новий конструктор – з дедлайном
+    public Task(Long id, Long groupId, String title, String description, String status, String deadline) {
+        this(id, groupId, title, description, status);
+        this.deadline = deadline;
+    }
+
+    // геттери/сеттери
 
     public Long getId() {
         return id;
@@ -55,5 +67,13 @@ public class Task {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getDeadline() {
+        return deadline;
+    }
+
+    public void setDeadline(String deadline) {
+        this.deadline = deadline;
     }
 }

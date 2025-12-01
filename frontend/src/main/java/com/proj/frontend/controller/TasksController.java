@@ -14,12 +14,10 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import com.proj.frontend.controller.StatsController;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public class TasksController {
-
-    @FXML
-    private Label groupLabel;
 
     @FXML
     private TableView<Task> tasksTable;
@@ -37,13 +35,22 @@ public class TasksController {
     private TableColumn<Task, String> statusColumn;
 
     @FXML
+    private TableColumn<Task, String> deadlineColumn;
+
+    @FXML
     private TextField titleField;
 
     @FXML
     private TextField descriptionField;
 
     @FXML
+    private DatePicker deadlinePicker;
+
+    @FXML
     private ComboBox<String> statusCombo;
+
+    @FXML
+    private Label deadlineSummaryLabel;
 
     private BackendService backendService;
     private User currentUser;
@@ -57,7 +64,6 @@ public class TasksController {
         this.stage = stage;
 
         stage.setTitle("Tasks - " + group.getName());
-        groupLabel.setText("Group: " + group.getName());
 
         setupTable();
         setupStatusCombo();
@@ -76,14 +82,13 @@ public class TasksController {
             titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
             descriptionColumn.setCellValueFactory(new PropertyValueFactory<>("description"));
             statusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
+            deadlineColumn.setCellValueFactory(new PropertyValueFactory<>("deadline"));
         }
     }
 
     private void setupStatusCombo() {
         if (statusCombo.getItems().isEmpty()) {
-            statusCombo.setItems(FXCollections.observableArrayList(
-                    "OPEN", "IN_PROGRESS", "DONE"
-            ));
+            statusCombo.setItems(FXCollections.observableArrayList("OPEN", "IN_PROGRESS", "DONE"));
             statusCombo.getSelectionModel().selectFirst();
         }
     }
@@ -92,26 +97,63 @@ public class TasksController {
         try {
             List<Task> tasks = backendService.getTasksByGroup(currentGroup.getId());
             tasksTable.setItems(FXCollections.observableArrayList(tasks));
+            updateDeadlineSummary(tasks);
         } catch (Exception e) {
             showError("Failed to load tasks: " + e.getMessage());
+        }
+    }
+
+    private void updateDeadlineSummary(List<Task> tasks) {
+        int overdue = 0;
+        int dueToday = 0;
+
+        LocalDate today = LocalDate.now();
+
+        for (Task t : tasks) {
+            String dl = t.getDeadline();
+            if (dl == null || dl.isBlank()) continue;
+
+            try {
+                LocalDate d = LocalDate.parse(dl);
+                if (d.isBefore(today)) {
+                    overdue++;
+                } else if (d.isEqual(today)) {
+                    dueToday++;
+                }
+            } catch (Exception ignored) {
+                // неправильний формат – пропускаємо
+            }
+        }
+
+        if (deadlineSummaryLabel != null) {
+            deadlineSummaryLabel.setText(
+                    "Deadlines – Overdue: " + overdue + ", Due today: " + dueToday
+            );
         }
     }
 
     @FXML
     private void handleAddTask() {
         String title = titleField.getText();
-        String desc = descriptionField.getText();
+        String description = descriptionField.getText();
+        LocalDate date = deadlinePicker.getValue();
 
         if (title == null || title.isBlank()) {
             showError("Title is required.");
             return;
         }
 
+        String deadline = (date != null) ? date.toString() : null;
+
         try {
-            Task created = backendService.createTask(currentGroup.getId(), title, desc);
+            Task created = backendService.createTask(currentGroup.getId(), title, description, deadline);
             tasksTable.getItems().add(created);
+            updateDeadlineSummary(tasksTable.getItems());
+
             titleField.clear();
             descriptionField.clear();
+            deadlinePicker.setValue(null);
+
         } catch (Exception e) {
             showError("Failed to create task: " + e.getMessage());
         }
@@ -121,7 +163,7 @@ public class TasksController {
     private void handleChangeStatus() {
         Task selected = tasksTable.getSelectionModel().getSelectedItem();
         if (selected == null) {
-            showError("Please select a task first.");
+            showError("Select a task first.");
             return;
         }
 
@@ -149,8 +191,7 @@ public class TasksController {
             stage.setScene(scene);
             stage.show();
         } catch (Exception e) {
-            e.printStackTrace();
-            showError("Cannot go back to dashboard: " + e.getMessage());
+            showError("Cannot go back: " + e.getMessage());
         }
     }
 

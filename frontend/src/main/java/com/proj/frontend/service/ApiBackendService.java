@@ -156,15 +156,13 @@ public class ApiBackendService implements BackendService {
     }
 
     @Override
-    public Task createTask(long groupId, String title, String description) throws Exception {
-        // TaskController.CreateTaskRequest: title, description, deadline, creatorName
+    public Task createTask(long groupId, String title, String description, String deadline) throws Exception {
         Map<String, Object> body = Map.of(
                 "title", title,
                 "description", description,
-                "deadline", null,          // поки без дедлайну
+                "deadline", deadline,         // може бути null
                 "creatorName", "FrontendUser"
         );
-
         String respBody = doPost("/tasks/group/" + groupId, body);
         return gson.fromJson(respBody, Task.class);
     }
@@ -197,4 +195,10 @@ public class ApiBackendService implements BackendService {
     public List<ActivityLog> getActivityLogs() throws Exception {
         return List.of();
     }
+
+    @Override
+    public User updateUserProfile(String newName, String newEmail) {
+        return new User(1L, newName, newEmail); // заглушка
+    }
+
 }

@@ -18,6 +18,7 @@
 
             <Pane HBox.hgrow="ALWAYS"/>
 
+            <Button text="Profile" onAction="#handleProfile" />
             <Button text="Activity log" onAction="#handleActivityLog"/>
             <Button text="Logout" onAction="#handleLogout"/>
             <Button text="Refresh" onAction="#handleRefresh"/>
