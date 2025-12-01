@@ -13,6 +13,7 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
+import com.proj.frontend.model.ActivityLog;
 
 public class ApiBackendService implements BackendService {
 
@@ -190,5 +191,10 @@ public class ApiBackendService implements BackendService {
         Resource dto = new Resource(null, groupId, title, "LINK", url);
         String respBody = doPost("/resources", dto);
         return gson.fromJson(respBody, Resource.class);
+    }
+
+    @Override
+    public List<ActivityLog> getActivityLogs() throws Exception {
+        return List.of();
     }
 }

@@ -11,6 +11,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
+import com.proj.frontend.controller.ActivityLogController;
 
 import java.util.List;
 import java.util.Optional;
@@ -156,5 +157,41 @@ public class DashboardController {
         alert.setHeaderText("Error");
         alert.setContentText(msg);
         alert.showAndWait();
+    }
+
+    @FXML
+    private void handleLogout() {
+        try {
+            FXMLLoader loader = new FXMLLoader(App.class.getResource("/fxml/login.fxml"));
+            Scene scene = new Scene(loader.load());
+
+            LoginController controller = loader.getController();
+            controller.setBackendService(backendService);
+            controller.setStage(stage);
+
+            stage.setTitle("Collaborative Study Platform - Login");
+            stage.setScene(scene);
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            showError("Cannot logout: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    private void handleActivityLog() {
+        try {
+            FXMLLoader loader = new FXMLLoader(App.class.getResource("/fxml/activity_log.fxml"));
+            Scene scene = new Scene(loader.load());
+
+            ActivityLogController controller = loader.getController();
+            controller.init(currentUser, backendService, stage);
+
+            stage.setScene(scene);
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            showError("Cannot open activity log: " + e.getMessage());
+        }
     }
 }

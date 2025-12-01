@@ -47,6 +47,10 @@
                 <ComboBox fx:id="statusCombo" prefWidth="150"/>
                 <Button text="Apply to selected task" onAction="#handleChangeStatus"/>
             </HBox>
+
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Button text="Show statistics" onAction="#handleShowStats"/>
+            </HBox>
         </VBox>
     </bottom>
 

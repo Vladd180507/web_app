@@ -17,4 +17,7 @@ public interface BackendService {
 
     List<Resource> getResourcesByGroup(long groupId) throws Exception;
     Resource createResource(long groupId, String title, String url) throws Exception;
+
+    // НОВЕ: журнали активності
+    List<ActivityLog> getActivityLogs() throws Exception;
 }

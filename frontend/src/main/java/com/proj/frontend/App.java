@@ -8,6 +8,9 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import com.proj.frontend.App;
+import com.proj.frontend.controller.LoginController;
+
 
 public class App extends Application {
 

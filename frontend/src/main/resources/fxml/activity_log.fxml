@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.proj.frontend.controller.ActivityLogController">
+
+    <top>
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+            <Button text="Back to dashboard" onAction="#handleBack"/>
+            <Label text="Activity log" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+        </HBox>
+    </top>
+
+    <center>
+        <TableView fx:id="logTable">
+            <columns>
+                <TableColumn fx:id="idColumn" text="ID" prefWidth="60"/>
+                <TableColumn fx:id="timestampColumn" text="Timestamp" prefWidth="160"/>
+                <TableColumn fx:id="userIdColumn" text="User ID" prefWidth="80"/>
+                <TableColumn fx:id="actionColumn" text="Action" prefWidth="140"/>
+                <TableColumn fx:id="detailsColumn" text="Details" prefWidth="260"/>
+            </columns>
+        </TableView>
+    </center>
+
+</BorderPane>

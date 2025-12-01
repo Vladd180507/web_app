@@ -12,6 +12,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
+import com.proj.frontend.controller.StatsController;
 
 import java.util.List;
 
@@ -158,5 +159,22 @@ public class TasksController {
         alert.setHeaderText("Error");
         alert.setContentText(msg);
         alert.showAndWait();
+    }
+
+    @FXML
+    private void handleShowStats() {
+        try {
+            FXMLLoader loader = new FXMLLoader(App.class.getResource("/fxml/stats.fxml"));
+            Scene scene = new Scene(loader.load());
+
+            StatsController controller = loader.getController();
+            controller.init(currentUser, currentGroup, backendService, stage);
+
+            stage.setScene(scene);
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            showError("Cannot open statistics view: " + e.getMessage());
+        }
     }
 }
