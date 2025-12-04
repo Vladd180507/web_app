@@ -1,6 +1,7 @@
 package com.proj.backend.controller;
 
 import com.proj.backend.config.JwtCore;
+import com.proj.backend.service.ActivityLogService;
 import com.proj.backend.service.UserService;
 import com.proj.backend.dto.UserDto;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
+import com.proj.backend.model.User;
 
 
 @RestController
@@ -22,6 +24,8 @@ public class UserController {
     private final AuthenticationManager authenticationManager;
     private final JwtCore jwtCore;
     private final UserService userService;
+    private final ActivityLogService activityLogService;
+
 
     // ✅ ЛОГИН - POST /api/users/login
 
@@ -38,8 +42,16 @@ public class UserController {
         // 2. Если успех - ставим контекст
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
+        User user = (User) authentication.getPrincipal();
+
         // 3. Генерируем токен
         String jwt = jwtCore.generateToken(authentication);
+        //  4. ЗАПИСЫВАЕМ ЛОГ ЗДЕСЬ (Вместо сервиса)
+        activityLogService.logActivity(
+                user.getUserId(),
+                "USER_LOGIN",
+                "Пользователь вошел в систему"
+        );
 
         // 4. Возвращаем токен клиенту
         return ResponseEntity.ok(jwt); // Или верни JSON { "token": "...", "user": ... }

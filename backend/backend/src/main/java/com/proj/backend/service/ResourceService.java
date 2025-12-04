@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ResourceService {
 
+    private final ActivityLogService activityLogService;
     private final ResourceRepository resourceRepository;
     private final GroupRepository groupRepository;
     private final UserRepository userRepository;
@@ -39,6 +40,12 @@ public class ResourceService {
                 .pathOrUrl(dto.getPathOrUrl())
                 .uploadedAt(LocalDateTime.now())
                 .build();
+
+        activityLogService.logActivity(
+                user.getUserId(),
+                "RESOURCE_UPLOADED",
+                "Загружен материал: " + dto.getTitle()
+        );
 
         Resource saved = resourceRepository.save(resource);
         return convertToDTO(saved);

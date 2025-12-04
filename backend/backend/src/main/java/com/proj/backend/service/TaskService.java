@@ -1,5 +1,6 @@
 package com.proj.backend.service;
 
+
 import com.proj.backend.dto.TaskDto;
 import com.proj.backend.model.*;
 import com.proj.backend.repository.*;
@@ -18,6 +19,8 @@ public class TaskService {
     private final GroupRepository groupRepository;
     private final UserRepository userRepository;
     private final SimpMessagingTemplate messagingTemplate;
+    private final ActivityLogService activityLogService;
+
 
     // ================================
     // GET TASKS BY GROUP
@@ -56,6 +59,11 @@ public class TaskService {
         // Все, кто подписан на /topic/group/1/tasks, получат этот объект моментально
         messagingTemplate.convertAndSend("/topic/group/" + groupId + "/tasks", taskDto);
 
+        activityLogService.logActivity(
+                creator.getUserId(),
+                "TASK_CREATED",
+                "Создана задача: " + title + " в группе " + group.getName()
+        );
         return taskDto;
     }
 

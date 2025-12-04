@@ -19,6 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class GroupService {
 
+    private final ActivityLogService activityLogService;
     private final GroupRepository groupRepository;
     private final UserRepository userRepository;
     private final MembershipRepository membershipRepository;
@@ -58,6 +59,12 @@ public class GroupService {
                 .role(MembershipRole.ADMIN)
                 .joinedAt(LocalDateTime.now())  // ✅ Добавь joined_at
                 .build();
+
+        activityLogService.logActivity(
+                creator.getUserId(),
+                "GROUP_CREATED",
+                "Создана новая группа: " + name
+        );
 
         membershipRepository.save(adminMembership);
 
