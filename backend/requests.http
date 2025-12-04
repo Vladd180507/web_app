@@ -270,3 +270,35 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJpdmFuQGV4YW1wbGUuY29tIiwia
   "deadline": "2025-12-31T23:59:59",
   "creatorName": "Ivan Student"
 }
+
+###
+POST http://localhost:8080/api/users/register
+Content-Type: application/json
+
+{
+"name": "Super Tester2",
+"email": "test2@test.com",
+"password": "123"
+}
+
+###
+POST http://localhost:8080/api/users/login
+Content-Type: application/json
+
+{
+"email": "test2@test.com",
+"password": "123"
+}
+eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MkB0ZXN0LmNvbSIsImlkIjo5LCJpYXQiOjE3NjQ4NjIyNzcsImV4cCI6MTc2NDk0ODY3N30.RIViwltrQ34wYruUfpWtokJvdR9LLdFNEyvCW19-PIY
+
+###
+POST http://localhost:8080/api/groups
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MkB0ZXN0LmNvbSIsImlkIjo5LCJpYXQiOjE3NjQ4NjIyNzcsImV4cCI6MTc2NDk0ODY3N30.RIViwltrQ34wYruUfpWtokJvdR9LLdFNEyvCW19-PIY
+
+
+{
+"name": "Final Test Group1",
+"description": "Testing everything",
+"createdBy": 8
+}
