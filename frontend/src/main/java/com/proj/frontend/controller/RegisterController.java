@@ -78,7 +78,7 @@ public class RegisterController {
     private void goToLogin() {
         try {
             FXMLLoader loader = new FXMLLoader(App.class.getResource("/fxml/login.fxml"));
-            Scene scene = new Scene(loader.load());
+            Scene scene = new Scene(loader.load(), 1150, 700);
 
             LoginController controller = loader.getController();
             controller.setBackendService(backendService);

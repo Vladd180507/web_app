@@ -23,7 +23,8 @@ public class App extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         FXMLLoader loader = new FXMLLoader(App.class.getResource("/fxml/login.fxml"));
-        Scene scene = new Scene(loader.load());
+        Scene scene = new Scene(loader.load(), 1150, 700);
+
 
         LoginController controller = loader.getController();
         controller.setBackendService(backendService);

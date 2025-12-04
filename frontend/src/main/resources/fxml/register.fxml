@@ -1,29 +1,71 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
-<?import javafx.geometry.*?>
+<?import javafx.scene.layout.*?>
 
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.proj.frontend.controller.RegisterController">
+            fx:controller="com.proj.frontend.controller.RegisterController"
+            styleClass="root">
 
     <center>
-        <VBox spacing="10" alignment="CENTER">
-            <padding><Insets top="30" bottom="30" left="30" right="30"/></padding>
+        <StackPane alignment="CENTER">
+            <VBox spacing="20"
+                  alignment="CENTER"
+                  styleClass="login-card"
+                  maxWidth="400"
+                  prefWidth="400"
+                  maxHeight="620"
+                  prefHeight="620">
 
-            <Label text="Register" style="-fx-font-size: 20px;"/>
+                <Label text="REGISTER" styleClass="login-title"/>
 
-            <TextField fx:id="nameField" promptText="Name" maxWidth="220"/>
-            <TextField fx:id="emailField" promptText="Email" maxWidth="220"/>
-            <PasswordField fx:id="passwordField" promptText="Password" maxWidth="220"/>
-            <PasswordField fx:id="confirmPasswordField" promptText="Confirm password" maxWidth="220"/>
+                <!-- Name -->
+                <VBox spacing="5" maxWidth="260" alignment="CENTER_LEFT">
+                    <Label text="Name" styleClass="field-label"/>
+                    <TextField fx:id="nameField"
+                               promptText="What is your name?"/>
+                </VBox>
 
-            <HBox spacing="10" alignment="CENTER">
-                <Button text="Back to login" onAction="#handleBackToLogin" prefWidth="110"/>
-                <Button text="Register" onAction="#handleRegister" prefWidth="110"/>
-            </HBox>
-        </VBox>
+                <!-- Email -->
+                <VBox spacing="5" maxWidth="260" alignment="CENTER_LEFT">
+                    <Label text="Email" styleClass="field-label"/>
+                    <TextField fx:id="emailField"
+                               promptText="Email"/>
+                </VBox>
+
+                <!-- Password -->
+                <VBox spacing="5" maxWidth="260" alignment="CENTER_LEFT">
+                    <Label text="Password" styleClass="field-label"/>
+                    <PasswordField fx:id="passwordField"
+                                   promptText="Password"/>
+                </VBox>
+
+                <!-- Confirm password -->
+                <VBox spacing="5" maxWidth="260" alignment="CENTER_LEFT">
+                    <Label text="Confirm password" styleClass="field-label"/>
+                    <PasswordField fx:id="confirmPasswordField"
+                                   promptText="Confirm password"/>
+                </VBox>
+
+                <!-- Кнопки -->
+                <HBox spacing="15" alignment="CENTER" maxWidth="260">
+                    <Button text="Back to login"
+                            onAction="#handleBackToLogin"
+                            HBox.hgrow="ALWAYS"
+                            maxWidth="Infinity"
+                            styleClass="secondary-button"/>
+
+                    <Button text="Register"
+                            onAction="#handleRegister"
+                            HBox.hgrow="ALWAYS"
+                            maxWidth="Infinity"
+                            styleClass="primary-button"/>
+                </HBox>
+
+            </VBox>
+        </StackPane>
     </center>
 
 </BorderPane>

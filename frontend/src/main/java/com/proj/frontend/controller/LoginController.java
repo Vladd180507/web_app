@@ -70,7 +70,10 @@ public class LoginController {
     private void handleOpenRegister() {
         try {
             FXMLLoader loader = new FXMLLoader(App.class.getResource("/fxml/register.fxml"));
-            Scene scene = new Scene(loader.load());
+            Scene scene = new Scene(loader.load(), 1150, 700);
+            scene.getStylesheets().add(
+                    App.class.getResource("/css/login.css").toExternalForm()
+            );
 
             RegisterController controller = loader.getController();
             controller.setBackendService(backendService);
