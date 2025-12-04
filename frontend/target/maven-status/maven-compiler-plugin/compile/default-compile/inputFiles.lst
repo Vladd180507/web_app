@@ -1,0 +1,13 @@
+D:\coding\SemWork\web_app\frontend\src\main\java\com\proj\frontend\App.java
+D:\coding\SemWork\web_app\frontend\src\main\java\com\proj\frontend\controller\DashboardController.java
+D:\coding\SemWork\web_app\frontend\src\main\java\com\proj\frontend\controller\LoginController.java
+D:\coding\SemWork\web_app\frontend\src\main\java\com\proj\frontend\controller\RegisterController.java
+D:\coding\SemWork\web_app\frontend\src\main\java\com\proj\frontend\controller\ResourcesController.java
+D:\coding\SemWork\web_app\frontend\src\main\java\com\proj\frontend\controller\TasksController.java
+D:\coding\SemWork\web_app\frontend\src\main\java\com\proj\frontend\model\Group.java
+D:\coding\SemWork\web_app\frontend\src\main\java\com\proj\frontend\model\Resource.java
+D:\coding\SemWork\web_app\frontend\src\main\java\com\proj\frontend\model\Task.java
+D:\coding\SemWork\web_app\frontend\src\main\java\com\proj\frontend\model\User.java
+D:\coding\SemWork\web_app\frontend\src\main\java\com\proj\frontend\service\ApiBackendService.java
+D:\coding\SemWork\web_app\frontend\src\main\java\com\proj\frontend\service\BackendService.java
+D:\coding\SemWork\web_app\frontend\src\main\java\com\proj\frontend\service\MockBackendService.java

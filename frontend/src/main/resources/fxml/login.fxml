@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import java.net.URL?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.proj.frontend.controller.LoginController"
+            styleClass="root">
+
+    <stylesheets>
+        <URL value="@../css/login.css"/>
+    </stylesheets>
+
+    <center>
+        <!-- Темна "карточка" логіну -->
+        <VBox spacing="20" alignment="CENTER" styleClass="login-card"
+              maxWidth="400"
+              maxHeight="480"
+              prefHeight="620">
+        <padding>
+                <Insets top="40" bottom="40" left="50" right="50"/>
+            </padding>
+
+            <Label text="LOG-IN" styleClass="login-title"/>
+
+            <!-- Username -->
+            <VBox spacing="5" maxWidth="260" alignment="CENTER_LEFT">
+                <Label text="Username" styleClass="field-label"/>
+                <TextField fx:id="emailField"
+                           promptText="Who are you ?"/>
+            </VBox>
+
+            <!-- Password -->
+            <VBox spacing="5" maxWidth="260" alignment="CENTER_LEFT">
+                <Label text="Password" styleClass="field-label"/>
+                <PasswordField fx:id="passwordField"
+                               promptText="Prove that it is true"/>
+            </VBox>
+
+            <Button text="Login"
+                    onAction="#handleLogin"
+                    maxWidth="260"
+                    styleClass="primary-button"/>
+
+            <VBox spacing="3" alignment="CENTER_LEFT" maxWidth="260">
+                <Hyperlink text="Don't have an account?"
+                           onAction="#handleOpenRegister"
+                           styleClass="secondary-link"/>
+            </VBox>
+
+        </VBox>
+    </center>
+
+</BorderPane>

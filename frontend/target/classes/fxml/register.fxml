@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.proj.frontend.controller.RegisterController">
+
+    <center>
+        <VBox spacing="10" alignment="CENTER">
+            <padding><Insets top="30" bottom="30" left="30" right="30"/></padding>
+
+            <Label text="Register" style="-fx-font-size: 20px;"/>
+
+            <TextField fx:id="nameField" promptText="Name" maxWidth="220"/>
+            <TextField fx:id="emailField" promptText="Email" maxWidth="220"/>
+            <PasswordField fx:id="passwordField" promptText="Password" maxWidth="220"/>
+            <PasswordField fx:id="confirmPasswordField" promptText="Confirm password" maxWidth="220"/>
+
+            <HBox spacing="10" alignment="CENTER">
+                <Button text="Back to login" onAction="#handleBackToLogin" prefWidth="110"/>
+                <Button text="Register" onAction="#handleRegister" prefWidth="110"/>
+            </HBox>
+        </VBox>
+    </center>
+
+</BorderPane>

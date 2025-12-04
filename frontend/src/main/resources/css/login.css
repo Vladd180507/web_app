@@ -1,0 +1,94 @@
+/* Фон всього вікна (root BorderPane) */
+.root {
+    -fx-background-image: url("../images/background.jpg");
+    -fx-background-size: cover;
+    -fx-background-position: center center;
+}
+
+/* Темна напівпрозора карточка з тінню */
+.login-card {
+    -fx-background-color: rgba(20, 20, 35, 0.45);
+    -fx-background-radius: 30;
+    -fx-padding: 40 50 40 50;
+    -fx-spacing: 30;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.65), 50, 0.3, 0, 12);
+}
+
+/* Заголовок LOG-IN */
+.login-title {
+    -fx-text-fill: white;
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+}
+
+/* Підписи "Username", "Password" */
+.field-label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+
+/* Поля вводу: прозорий фон + нижня лінія */
+.login-card .text-field,
+.login-card .password-field {
+    -fx-background-color: transparent;
+    -fx-text-fill: #f7f7f7;
+    -fx-font-size: 14px;
+
+    /* текст підказки сіренький */
+    -fx-prompt-text-fill: rgba(220,220,220,0.6);
+
+    /* замість рамки – тільки нижня лінія */
+    -fx-border-color: rgba(255,255,255,0.4);
+    -fx-border-width: 0 0 1 0;
+
+    -fx-background-insets: 0;
+    -fx-padding: 4 0 6 0;
+}
+
+/* Основна фіолетова кнопка Login */
+.primary-button {
+    -fx-background-color: linear-gradient(to right, #5b5bff, #745bff);
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+
+    -fx-background-radius: 30;
+    -fx-padding: 8 30 8 30;
+
+    -fx-cursor: hand;
+
+    -fx-font-size: 14px;
+}
+
+/* ховер-ефект */
+.primary-button:hover {
+    -fx-background-color: linear-gradient(to right, #6c6cff, #856cff);
+}
+
+/* Текстові посилання знизу */
+.secondary-link {
+    -fx-text-fill: rgba(255,255,255,0.75);
+    -fx-underline: false;
+}
+
+.secondary-link:hover {
+    -fx-text-fill: white;
+}
+
+/* Сіра/прозора кнопка для "Back to login" */
+.secondary-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #e0e0e0;
+    -fx-border-color: #4e4e6a;
+    -fx-border-width: 1px;
+    -fx-border-radius: 30;
+    -fx-background-radius: 30;
+    -fx-padding: 8 20 8 20;
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
+}
+
+.secondary-button:hover {
+    -fx-border-color: #7a7ad0;
+    -fx-text-fill: #ffffff;
+}
