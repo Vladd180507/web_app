@@ -53,6 +53,10 @@ public class LoginController {
             FXMLLoader loader = new FXMLLoader(App.class.getResource("/fxml/main_menu.fxml"));
             Scene scene = new Scene(loader.load(), 1150, 700);
 
+            scene.getStylesheets().add(
+                    App.class.getResource("/css/main_menu.css").toExternalForm()
+            );
+
             MainMenuController controller = loader.getController();
             controller.init(user, backendService, stage);
 

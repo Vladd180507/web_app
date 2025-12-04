@@ -17,6 +17,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import com.proj.frontend.controller.MainMenuController;
 
 public class DashboardController {
 
@@ -106,7 +107,7 @@ public class DashboardController {
 
     private Scene createLoginScene(FXMLLoader loader) throws IOException {
         // логін у тебе менший, тому не чіпаю розмір (або постав той, який ти використовуєш)
-        Scene scene = new Scene(loader.load(), 550, 750);
+        Scene scene = new Scene(loader.load(), 1150, 700);
         scene.getStylesheets().add(
                 App.class.getResource(LOGIN_STYLESHEET).toExternalForm()
         );
@@ -159,7 +160,7 @@ public class DashboardController {
     private void openTasksForGroup(Group group) {
         try {
             FXMLLoader loader = new FXMLLoader(App.class.getResource("/fxml/tasks.fxml"));
-            Scene scene = createAppScene(loader);
+            Scene scene = new Scene(loader.load(), 1150, 700);
 
             TasksController controller = loader.getController();
             controller.init(currentUser, group, backendService, stage);
@@ -185,7 +186,7 @@ public class DashboardController {
     private void openResourcesForGroup(Group group) {
         try {
             FXMLLoader loader = new FXMLLoader(App.class.getResource("/fxml/resources.fxml"));
-            Scene scene = createAppScene(loader);
+            Scene scene = new Scene(loader.load(), 1150, 700);
 
             ResourcesController controller = loader.getController();
             controller.init(currentUser, group, backendService, stage);
@@ -213,7 +214,7 @@ public class DashboardController {
 
         try {
             FXMLLoader loader = new FXMLLoader(App.class.getResource("/fxml/login.fxml"));
-            Scene scene = createLoginScene(loader);
+            Scene scene = new Scene(loader.load(), 1150, 700);
 
             LoginController controller = loader.getController();
             controller.setBackendService(backendService);
@@ -232,7 +233,7 @@ public class DashboardController {
     private void handleActivityLog() {
         try {
             FXMLLoader loader = new FXMLLoader(App.class.getResource("/fxml/activity_log.fxml"));
-            Scene scene = createAppScene(loader);
+            Scene scene = new Scene(loader.load(), 1150, 700);
 
             ActivityLogController controller = loader.getController();
             controller.init(currentUser, backendService, stage);
@@ -262,7 +263,7 @@ public class DashboardController {
     private void handleProfile() {
         try {
             FXMLLoader loader = new FXMLLoader(App.class.getResource("/fxml/profile.fxml"));
-            Scene scene = createAppScene(loader);
+            Scene scene = new Scene(loader.load(), 1150, 700);
 
             ProfileController controller = loader.getController();
             controller.init(currentUser, backendService, stage);
@@ -351,7 +352,7 @@ public class DashboardController {
 
         try {
             FXMLLoader loader = new FXMLLoader(App.class.getResource("/fxml/members.fxml"));
-            Scene scene = createAppScene(loader);
+            Scene scene = new Scene(loader.load(), 1150, 700);
 
             MembersController controller = loader.getController();
             controller.init(currentUser, selected, backendService, stage);
@@ -361,6 +362,27 @@ public class DashboardController {
         } catch (Exception e) {
             e.printStackTrace();
             showError("Cannot open members view: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    private void handleBackToMenu() {
+        try {
+            FXMLLoader loader = new FXMLLoader(App.class.getResource("/fxml/main_menu.fxml"));
+            Scene scene = new Scene(loader.load(), 1150, 700);
+
+            scene.getStylesheets().add(
+                    App.class.getResource("/css/main_menu.css").toExternalForm()
+            );
+
+            MainMenuController controller = loader.getController();
+            controller.init(currentUser, backendService, stage);
+
+            stage.setScene(scene);
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            showError("Cannot return to main menu: " + e.getMessage());
         }
     }
 }

@@ -1,33 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
-<?import javafx.geometry.*?>
+<?import javafx.scene.layout.*?>
 
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.proj.frontend.controller.ActivityLogController">
-
-    <top>
-        <HBox spacing="10" alignment="CENTER_LEFT">
-            <padding>
-                <Insets top="10" right="10" bottom="10" left="10"/>
-            </padding>
-            <Button text="Back to dashboard" onAction="#handleBack"/>
-            <Label text="Activity log" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
-        </HBox>
-    </top>
+            fx:controller="com.proj.frontend.controller.ActivityLogController"
+            styleClass="root">
 
     <center>
-        <TableView fx:id="logTable">
-            <columns>
-                <TableColumn fx:id="idColumn" text="ID" prefWidth="60"/>
-                <TableColumn fx:id="timestampColumn" text="Timestamp" prefWidth="160"/>
-                <TableColumn fx:id="userIdColumn" text="User ID" prefWidth="80"/>
-                <TableColumn fx:id="actionColumn" text="Action" prefWidth="140"/>
-                <TableColumn fx:id="detailsColumn" text="Details" prefWidth="260"/>
-            </columns>
-        </TableView>
+        <StackPane alignment="CENTER">
+            <!-- Темна картка з логами -->
+            <VBox spacing="20"
+                  alignment="CENTER"
+                  maxWidth="950"
+                  prefWidth="950"
+                  maxHeight="580"
+                  prefHeight="580"
+                  styleClass="activity-card">
+
+                <!-- Верхній рядок: Back + заголовок -->
+                <HBox spacing="10" alignment="CENTER_LEFT" maxWidth="900">
+                    <Button text="Back to dashboard"
+                            onAction="#handleBack"
+                            styleClass="secondary-button"/>
+
+                    <Region HBox.hgrow="ALWAYS"/>
+
+                    <Label text="Activity log"
+                           styleClass="activity-title"/>
+                </HBox>
+
+                <!-- Таблиця з логами -->
+                <TableView fx:id="logTable"
+                           VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="idColumn" text="ID" prefWidth="70"/>
+                        <TableColumn fx:id="timestampColumn" text="Timestamp" prefWidth="220"/>
+                        <TableColumn fx:id="userIdColumn" text="User ID" prefWidth="80"/>
+                        <TableColumn fx:id="actionColumn" text="Action" prefWidth="140"/>
+                        <TableColumn fx:id="detailsColumn" text="Details" prefWidth="400"/>
+                    </columns>
+                </TableView>
+
+            </VBox>
+        </StackPane>
     </center>
 
 </BorderPane>

@@ -28,16 +28,16 @@
 
             <!-- Username -->
             <VBox spacing="5" maxWidth="260" alignment="CENTER_LEFT">
-                <Label text="Username" styleClass="field-label"/>
+                <Label text="Email" styleClass="field-label"/>
                 <TextField fx:id="emailField"
-                           promptText="Who are you ?"/>
+                           promptText="Enter your email"/>
             </VBox>
 
             <!-- Password -->
             <VBox spacing="5" maxWidth="260" alignment="CENTER_LEFT">
                 <Label text="Password" styleClass="field-label"/>
                 <PasswordField fx:id="passwordField"
-                               promptText="Prove that it is true"/>
+                               promptText="Enter your password"/>
             </VBox>
 
             <Button text="Login"
