@@ -1,4 +1,5 @@
 package com.proj.frontend.controller;
+import com.proj.frontend.controller.MainMenuController;
 
 import com.proj.frontend.App;
 import com.proj.frontend.model.User;
@@ -37,7 +38,7 @@ public class LoginController {
             User user = backendService.login(email, password);
 
             // замість алерта відкриваємо dashboard
-            openDashboard(user);
+            openMainMenu(user);
 
         } catch (Exception e) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -47,24 +48,21 @@ public class LoginController {
         }
     }
 
-    private void openDashboard(User user) {
+    private void openMainMenu(User user) {
         try {
-            FXMLLoader loader = new FXMLLoader(App.class.getResource("/fxml/dashboard.fxml"));
-            Scene scene = new Scene(loader.load());
+            FXMLLoader loader = new FXMLLoader(App.class.getResource("/fxml/main_menu.fxml"));
+            Scene scene = new Scene(loader.load(), 1150, 700);
 
-            DashboardController controller = loader.getController();
+            MainMenuController controller = loader.getController();
             controller.init(user, backendService, stage);
 
             stage.setScene(scene);
             stage.show();
         } catch (Exception e) {
             e.printStackTrace();
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setHeaderText("Navigation error");
-            alert.setContentText("Cannot open dashboard: " + e.getMessage());
-            alert.showAndWait();
         }
     }
+
 
     @FXML
     private void handleOpenRegister() {

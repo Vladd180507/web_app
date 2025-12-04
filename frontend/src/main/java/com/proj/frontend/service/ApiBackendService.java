@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import com.proj.frontend.model.ActivityLog;
 import com.proj.frontend.model.Member;
+import com.proj.frontend.controller.AllResourcesController;
 
 public class ApiBackendService implements BackendService {
 
@@ -243,5 +244,12 @@ public class ApiBackendService implements BackendService {
     public boolean removeMemberFromGroup(long groupId, long userId) throws Exception {
         // TODO: DELETE /api/memberships/leave
         return true;
+    }
+
+    @Override
+    public List<Resource> getAllResources() throws Exception {
+        // TODO: коли бекенд буде готовий, тут можна зробити doGet("/resources")
+        // Поки що повертаємо порожній список, бо в реальній роботі ми використовуємо MockBackendService
+        return List.of();
     }
 }

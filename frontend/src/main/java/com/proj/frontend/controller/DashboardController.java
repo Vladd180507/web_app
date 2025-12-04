@@ -13,15 +13,23 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
-import javafx.scene.control.ButtonType;
-import com.proj.frontend.controller.MembersController;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
 public class DashboardController {
 
     private static final boolean ENABLE_WEBSOCKET_NOTIFICATIONS = true;
+
+    // розміри головного вікна застосунку
+    private static final double APP_WIDTH = 1150;
+    private static final double APP_HEIGHT = 700;
+
+    // CSS для екранів застосунку
+    private static final String APP_STYLESHEET = "/css/dashboard.css";
+    // CSS для екрану логіну
+    private static final String LOGIN_STYLESHEET = "/css/login.css";
 
     private WebSocketNotificationsClient notificationsClient;
 
@@ -47,6 +55,8 @@ public class DashboardController {
         this.stage = stage;
 
         stage.setTitle("Collaborative Study Platform - Dashboard (" + user.getName() + ")");
+        stage.setWidth(APP_WIDTH);
+        stage.setHeight(APP_HEIGHT);
 
         setupTable();
         loadGroups();
@@ -67,6 +77,12 @@ public class DashboardController {
             nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
             descriptionColumn.setCellValueFactory(new PropertyValueFactory<>("description"));
         }
+
+        // щоб таблиця займала всю ширину красиво
+        groupsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
+        // placeholder коли груп немає
+        groupsTable.setPlaceholder(new Label("No groups yet. Create your first group!"));
     }
 
     private void loadGroups() {
@@ -77,6 +93,27 @@ public class DashboardController {
             showError("Failed to load groups: " + e.getMessage());
         }
     }
+
+    // --------- helpers для створення сцен ---------
+
+    private Scene createAppScene(FXMLLoader loader) throws IOException {
+        Scene scene = new Scene(loader.load(), APP_WIDTH, APP_HEIGHT);
+        scene.getStylesheets().add(
+                App.class.getResource(APP_STYLESHEET).toExternalForm()
+        );
+        return scene;
+    }
+
+    private Scene createLoginScene(FXMLLoader loader) throws IOException {
+        // логін у тебе менший, тому не чіпаю розмір (або постав той, який ти використовуєш)
+        Scene scene = new Scene(loader.load(), 550, 750);
+        scene.getStylesheets().add(
+                App.class.getResource(LOGIN_STYLESHEET).toExternalForm()
+        );
+        return scene;
+    }
+
+    // ----------------- дії UI -----------------
 
     @FXML
     private void handleRefresh() {
@@ -122,7 +159,7 @@ public class DashboardController {
     private void openTasksForGroup(Group group) {
         try {
             FXMLLoader loader = new FXMLLoader(App.class.getResource("/fxml/tasks.fxml"));
-            Scene scene = new Scene(loader.load());
+            Scene scene = createAppScene(loader);
 
             TasksController controller = loader.getController();
             controller.init(currentUser, group, backendService, stage);
@@ -148,7 +185,7 @@ public class DashboardController {
     private void openResourcesForGroup(Group group) {
         try {
             FXMLLoader loader = new FXMLLoader(App.class.getResource("/fxml/resources.fxml"));
-            Scene scene = new Scene(loader.load());
+            Scene scene = createAppScene(loader);
 
             ResourcesController controller = loader.getController();
             controller.init(currentUser, group, backendService, stage);
@@ -176,7 +213,7 @@ public class DashboardController {
 
         try {
             FXMLLoader loader = new FXMLLoader(App.class.getResource("/fxml/login.fxml"));
-            Scene scene = new Scene(loader.load());
+            Scene scene = createLoginScene(loader);
 
             LoginController controller = loader.getController();
             controller.setBackendService(backendService);
@@ -195,7 +232,7 @@ public class DashboardController {
     private void handleActivityLog() {
         try {
             FXMLLoader loader = new FXMLLoader(App.class.getResource("/fxml/activity_log.fxml"));
-            Scene scene = new Scene(loader.load());
+            Scene scene = createAppScene(loader);
 
             ActivityLogController controller = loader.getController();
             controller.init(currentUser, backendService, stage);
@@ -225,7 +262,7 @@ public class DashboardController {
     private void handleProfile() {
         try {
             FXMLLoader loader = new FXMLLoader(App.class.getResource("/fxml/profile.fxml"));
-            Scene scene = new Scene(loader.load());
+            Scene scene = createAppScene(loader);
 
             ProfileController controller = loader.getController();
             controller.init(currentUser, backendService, stage);
@@ -314,7 +351,7 @@ public class DashboardController {
 
         try {
             FXMLLoader loader = new FXMLLoader(App.class.getResource("/fxml/members.fxml"));
-            Scene scene = new Scene(loader.load());
+            Scene scene = createAppScene(loader);
 
             MembersController controller = loader.getController();
             controller.init(currentUser, selected, backendService, stage);

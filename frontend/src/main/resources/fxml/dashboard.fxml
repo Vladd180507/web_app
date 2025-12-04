@@ -1,53 +1,97 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
-<?import javafx.geometry.*?>
+<?import javafx.scene.layout.*?>
 
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.proj.frontend.controller.DashboardController">
-
-    <top>
-        <HBox spacing="10" alignment="CENTER_LEFT">
-            <padding>
-                <Insets top="10" right="10" bottom="10" left="10"/>
-            </padding>
-
-            <Label text="Groups" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
-
-            <Pane HBox.hgrow="ALWAYS"/>
-
-            <Button text="Profile" onAction="#handleProfile" />
-            <Button text="Activity log" onAction="#handleActivityLog"/>
-            <Button text="Logout" onAction="#handleLogout"/>
-            <Button text="Refresh" onAction="#handleRefresh"/>
-        </HBox>
-    </top>
+            fx:controller="com.proj.frontend.controller.DashboardController"
+            styleClass="root">
 
     <center>
-        <TableView fx:id="groupsTable">
-            <columns>
-                <TableColumn fx:id="idColumn" text="ID" prefWidth="60"/>
-                <TableColumn fx:id="nameColumn" text="Name" prefWidth="180"/>
-                <TableColumn fx:id="descriptionColumn" text="Description" prefWidth="260"/>
-            </columns>
-        </TableView>
+        <!-- Темна панель на весь центр -->
+        <VBox styleClass="app-card"
+              spacing="20">
+
+            <!-- ВЕРХНІЙ БАР -->
+            <HBox spacing="15" alignment="CENTER_LEFT">
+
+                <!-- Заголовок -->
+                <Label text="Groups" styleClass="app-header-title"/>
+
+                <!-- Розтягувач, щоб кнопки поїхали вправо -->
+                <Region HBox.hgrow="ALWAYS"/>
+
+                <!-- Profile / Activity log -->
+                <HBox spacing="10" alignment="CENTER_RIGHT">
+                    <Button text="Profile"
+                            onAction="#handleProfile"
+                            styleClass="secondary-button"/>
+                    <Button text="Activity log"
+                            onAction="#handleActivityLog"
+                            styleClass="secondary-button"/>
+                </HBox>
+
+                <!-- Вертикальний роздільник -->
+                <Separator orientation="VERTICAL"/>
+
+                <!-- Refresh / Logout -->
+                <HBox spacing="10" alignment="CENTER_RIGHT">
+                    <Button text="Refresh"
+                            onAction="#handleRefresh"
+                            styleClass="icon-button"/>
+                    <Button text="Logout"
+                            onAction="#handleLogout"
+                            styleClass="danger-button"/>
+                </HBox>
+            </HBox>
+
+            <!-- ТАБЛИЦЯ ГРУП -->
+            <TableView fx:id="groupsTable" VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn fx:id="idColumn"
+                                 text="ID"
+                                 prefWidth="80"/>
+                    <TableColumn fx:id="nameColumn"
+                                 text="Name"
+                                 prefWidth="250"/>
+                    <TableColumn fx:id="descriptionColumn"
+                                 text="Description"
+                                 prefWidth="600"/>
+                </columns>
+            </TableView>
+
+            <!-- НИЖНІ КНОПКИ ДІЙ З ГРУПАМИ -->
+            <HBox spacing="10" alignment="CENTER_RIGHT">
+
+                <Button text="Open tasks"
+                        onAction="#handleOpenGroup"
+                        styleClass="secondary-button action-button"/>
+
+                <Button text="Open resources"
+                        onAction="#handleOpenResources"
+                        styleClass="secondary-button action-button"/>
+
+                <Region HBox.hgrow="ALWAYS"/>
+
+                <Button text="Add group"
+                        onAction="#handleAddGroup"
+                        styleClass="primary-button action-button"/>
+
+                <Button text="Edit group"
+                        onAction="#handleEditGroup"
+                        styleClass="secondary-button action-button"/>
+
+                <Button text="Delete group"
+                        onAction="#handleDeleteGroup"
+                        styleClass="danger-button action-button"/>
+
+                <Button text="Members"
+                        onAction="#handleOpenMembers"
+                        styleClass="secondary-button action-button"/>
+            </HBox>
+
+        </VBox>
     </center>
-
-    <bottom>
-        <HBox spacing="10" alignment="CENTER_RIGHT">
-            <padding>
-                <Insets top="10" right="10" bottom="10" left="10"/>
-            </padding>
-
-            <Button text="Open group tasks" onAction="#handleOpenGroup"/>
-            <Button text="Open group resources" onAction="#handleOpenResources"/>
-            <Button text="Add group" onAction="#handleAddGroup"/>
-            <Button text="Edit group" onAction="#handleEditGroup"/>
-            <Button text="Delete group" onAction="#handleDeleteGroup"/>
-            <Button text="Members" onAction="#handleOpenMembers"/>
-        </HBox>
-    </bottom>
 
 </BorderPane>

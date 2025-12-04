@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.proj.frontend.controller.MainMenuController">
+
+    <center>
+        <VBox spacing="20" alignment="CENTER">
+            <padding>
+                <Insets top="40" bottom="40" left="40" right="40"/>
+            </padding>
+
+            <Label text="Main Menu"
+                   style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+
+            <Button text="Groups" minWidth="200" onAction="#handleGroups"/>
+            <Button text="Activity Log" minWidth="200" onAction="#handleActivity"/>
+            <Button text="Profile" minWidth="200" onAction="#handleProfile"/>
+            <Button text="All Resources" minWidth="200" onAction="#handleAllResources"/>
+
+            <Button text="Logout" minWidth="200" onAction="#handleLogout"
+                    style="-fx-background-color: #d9534f; -fx-text-fill: white;"/>
+        </VBox>
+    </center>
+
+</BorderPane>

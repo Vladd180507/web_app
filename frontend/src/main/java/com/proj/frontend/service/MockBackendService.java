@@ -260,4 +260,9 @@ public class MockBackendService implements BackendService {
         }
         return false;
     }
+
+    @Override
+    public List<Resource> getAllResources() {
+        return resources;
+    }
 }

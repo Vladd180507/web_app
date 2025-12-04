@@ -29,4 +29,5 @@ public interface BackendService {
     Member addMemberToGroup(long groupId, String name, String email, String role) throws Exception;
     boolean removeMemberFromGroup(long groupId, long userId) throws Exception;
 
+    List<Resource> getAllResources() throws Exception;
 }
