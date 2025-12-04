@@ -1,0 +1,63 @@
+/* Фон – той самий, що й в інших екранах */
+.root {
+    -fx-background-image: url("../images/background.jpg");
+    -fx-background-size: cover;
+    -fx-background-position: center center;
+}
+
+/* Центральна панель з кнопками */
+.menu-panel {
+    -fx-background-color: rgba(20, 20, 35, 0.55);
+    -fx-background-radius: 30;
+    -fx-padding: 30 40 30 40;
+    -fx-spacing: 25;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.65), 40, 0.3, 0, 12);
+}
+
+/* Заголовок Main Menu */
+.menu-title {
+    -fx-text-fill: white;
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+}
+
+/* 4 основні прямокутні кнопки */
+.menu-button {
+    -fx-background-color: rgba(240,240,255,0.1);
+    -fx-text-fill: #f5f5f5;
+
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+
+    -fx-border-color: rgba(255,255,255,0.35);
+    -fx-border-width: 1;
+
+    -fx-padding: 10 24 10 24;
+    -fx-font-size: 15px;
+    -fx-font-weight: normal;
+
+    -fx-cursor: hand;
+}
+
+.menu-button:hover {
+    -fx-background-color: rgba(240,240,255,0.2);
+}
+
+/* Окрема еліпсоподібна червона кнопка Logout */
+.logout-button {
+    -fx-background-color: linear-gradient(to right, #ff6b6b, #ff4c4c);
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+
+    -fx-background-radius: 24;
+    -fx-border-radius: 24;
+
+    -fx-padding: 10 32 10 32;
+    -fx-font-size: 15px;
+
+    -fx-cursor: hand;
+}
+
+.logout-button:hover {
+    -fx-background-color: linear-gradient(to right, #ff7c7c, #ff5e5e);
+}

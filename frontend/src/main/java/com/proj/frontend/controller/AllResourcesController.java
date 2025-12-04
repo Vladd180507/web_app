@@ -63,12 +63,17 @@ public class AllResourcesController {
     private void handleBack() {
         try {
             FXMLLoader loader = new FXMLLoader(App.class.getResource("/fxml/main_menu.fxml"));
-            Scene scene = new Scene(loader.load());
+            Scene scene = new Scene(loader.load(), 1150, 700);
+
+            scene.getStylesheets().add(
+                    App.class.getResource("/css/main_menu.css").toExternalForm()
+            );
 
             MainMenuController controller = loader.getController();
-            controller.init(currentUser, backendService, stage);
+            controller.init(currentUser, backendService, stage); // <-- ось тут
 
             stage.setScene(scene);
+            stage.show();
         } catch (Exception e) {
             e.printStackTrace();
         }

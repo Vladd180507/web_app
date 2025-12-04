@@ -1,30 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.proj.frontend.controller.MainMenuController">
+            fx:controller="com.proj.frontend.controller.MainMenuController"
+            styleClass="root">
 
     <center>
-        <VBox spacing="20" alignment="CENTER">
-            <padding>
-                <Insets top="40" bottom="40" left="40" right="40"/>
-            </padding>
+        <StackPane alignment="CENTER">
+            <!-- Темна картка з кнопками -->
+            <VBox spacing="25"
+                  alignment="CENTER"
+                  styleClass="menu-panel"
+                  maxWidth="380"
+                  prefWidth="380"
+                  maxHeight="430"
+                  prefHeight="430">
 
-            <Label text="Main Menu"
-                   style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+                <Label text="Main Menu"
+                       styleClass="menu-title"/>
 
-            <Button text="Groups" minWidth="200" onAction="#handleGroups"/>
-            <Button text="Activity Log" minWidth="200" onAction="#handleActivity"/>
-            <Button text="Profile" minWidth="200" onAction="#handleProfile"/>
-            <Button text="All Resources" minWidth="200" onAction="#handleAllResources"/>
+                <!-- Блок із 4 основними кнопками -->
+                <VBox spacing="15" alignment="CENTER" maxWidth="260">
 
-            <Button text="Logout" minWidth="200" onAction="#handleLogout"
-                    style="-fx-background-color: #d9534f; -fx-text-fill: white;"/>
-        </VBox>
+                    <Button text="Groups"
+                            onAction="#handleOpenGroups"
+                            maxWidth="Infinity"
+                            styleClass="menu-button"/>
+
+                    <Button text="Activity Log"
+                            onAction="#handleOpenActivityLog"
+                            maxWidth="Infinity"
+                            styleClass="menu-button"/>
+
+                    <Button text="Profile"
+                            onAction="#handleOpenProfile"
+                            maxWidth="Infinity"
+                            styleClass="menu-button"/>
+
+                    <Button text="All Resources"
+                            onAction="#handleOpenAllResources"
+                            maxWidth="Infinity"
+                            styleClass="menu-button"/>
+                </VBox>
+
+                <!-- Logout окремо знизу -->
+                <Button text="Logout"
+                        onAction="#handleLogout"
+                        maxWidth="180"
+                        styleClass="logout-button"/>
+
+            </VBox>
+        </StackPane>
     </center>
 
 </BorderPane>

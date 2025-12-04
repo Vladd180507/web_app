@@ -78,11 +78,15 @@ public class ActivityLogController {
     @FXML
     private void handleBack() {
         try {
-            FXMLLoader loader = new FXMLLoader(App.class.getResource("/fxml/dashboard.fxml"));
-            Scene scene = new Scene(loader.load());
+            FXMLLoader loader = new FXMLLoader(App.class.getResource("/fxml/main_menu.fxml"));
+            Scene scene = new Scene(loader.load(), 1150, 700);
 
-            DashboardController controller = loader.getController();
-            controller.init(currentUser, backendService, stage);
+            scene.getStylesheets().add(
+                    App.class.getResource("/css/main_menu.css").toExternalForm()
+            );
+
+            MainMenuController controller = loader.getController();
+            controller.init(currentUser, backendService, stage); // <-- ось тут
 
             stage.setScene(scene);
             stage.show();

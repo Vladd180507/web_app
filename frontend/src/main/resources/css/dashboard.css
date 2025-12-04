@@ -21,7 +21,6 @@
     -fx-font-weight: bold;
 }
 
-/* Основна фіолетова кнопка (як Login/Register) */
 .primary-button {
     -fx-background-color: linear-gradient(to right, #5b5bff, #745bff);
     -fx-text-fill: white;
@@ -86,6 +85,50 @@
     -fx-border-color: #7a7ad0;
 }
 
+/* ================= НИЖНІ КНОПКИ-ДІЇ (пігулки) ================= */
+
+.action-button {
+    -fx-min-width: 140px;
+    -fx-background-radius: 999;
+    -fx-border-radius: 999;
+    -fx-padding: 8 24 8 24;
+    -fx-font-size: 14px;
+}
+
+/* PRIMARY + action-button – фіолетова пігулка */
+.primary-button.action-button {
+    -fx-background-color: linear-gradient(to right, #5b5bff, #745bff);
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.primary-button.action-button:hover {
+    -fx-background-color: linear-gradient(to right, #6c6cff, #856cff);
+}
+
+/* SECONDARY + action-button – сіра пігулка */
+.secondary-button.action-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #e0e0e0;
+    -fx-border-color: #5b5b7a;
+}
+
+.secondary-button.action-button:hover {
+    -fx-border-color: #7a7ad0;
+    -fx-text-fill: white;
+}
+
+/* DANGER + action-button – червона пігулка */
+.danger-button.action-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #ff9b9b;
+    -fx-border-color: #ff6b6b;
+}
+
+.danger-button.action-button:hover {
+    -fx-background-color: rgba(255, 107, 107, 0.18);
+}
+
 /* Темний стиль таблиці */
 .table-view {
     -fx-background-color: transparent;
@@ -97,26 +140,52 @@
 }
 
 .table-view .column-header-background {
-    -fx-background-color: rgba(255, 255, 255, 0.08); /* світліше */
+    -fx-background-color: rgba(240, 240, 255, 0.07);
+    -fx-background-radius: 15 15 0 0;
+    -fx-max-height: 32;
+    -fx-pref-height: 32;
 }
 
 .table-view .column-header {
-    -fx-border-width: 0 0 1 0;
-    -fx-border-color: rgba(255, 255, 255, 0.15);
+    -fx-border-width: 0 1 1 0;
+    -fx-background-color: rgba(255, 0, 0, 0);
+    -fx-border-color: rgba(240, 240, 255, 0.2);
 }
 
-/* текст заголовків */
+#descriptionColumn {
+    -fx-border-width: 0 0 1 0;
+}
+
+#idColumn {
+    -fx-alignment: CENTER;
+    -fx-font-weight: bold;
+}
+
 .table-view .column-header .label {
-    -fx-text-fill: rgba(255, 255, 255, 0.85);
+    -fx-text-fill: rgba(173, 199, 239, 0.85);
     -fx-font-size: 14px;
     -fx-font-weight: bold;
 }
 
-.table-view .filler {
-    -fx-background-color: rgba(255, 255, 255, 0.08);
+/*--------------------------------------------------------------------------------------*/
+
+.table-row-cell {
+    -fx-cell-size: 32px;
 }
 
-.action-button {
-    -fx-min-width: 130;
-    -fx-padding: 8 20 8 20; /* уже є у кнопок, але можна трохи підкрутити */
+/* Текст у клітинках */
+.table-cell {
+    -fx-text-fill: #f5f5f5;
+    -fx-font-size: 13px;
+    -fx-padding: 5;
+}
+
+/* Виділений рядок */
+.table-row-cell:filled:selected,
+.table-row-cell:filled:selected:hover {
+    -fx-background-color: rgba(90, 90, 200, 0.45);
+}
+
+.table-view .filler {
+    -fx-background-color: rgba(255, 255, 255, 0.08);
 }
