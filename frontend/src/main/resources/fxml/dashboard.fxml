@@ -1,87 +1,83 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.proj.frontend.controller.DashboardController"
-            styleClass="root">
+<BorderPane
+        xmlns="http://javafx.com/javafx"
+        xmlns:fx="http://javafx.com/fxml"
+        fx:controller="com.proj.frontend.controller.DashboardController"
+        styleClass="root">
 
     <center>
         <StackPane alignment="CENTER">
-            <!-- Темна панель НЕ на весь екран -->
-            <VBox styleClass="app-card"
-                  spacing="20"
-                  maxWidth="1000"
-                  prefWidth="1000"
-                  maxHeight="600"
-                  prefHeight="600">
 
-                <!-- ВЕРХНІЙ БАР -->
+            <!-- Головна темна панель всередині вікна -->
+            <VBox
+                    styleClass="app-card"
+                    spacing="20"
+                    maxWidth="900"
+                    prefWidth="900"
+                    maxHeight="600"
+                    prefHeight="600">
+
+                <!-- Верхній бар -->
                 <HBox spacing="15" alignment="CENTER_LEFT">
                     <Label text="Groups" styleClass="app-header-title"/>
 
                     <Region HBox.hgrow="ALWAYS"/>
 
                     <HBox spacing="10" alignment="CENTER_RIGHT">
+                        <Button text="Back"
+                                onAction="#handleBackToMenu"
+                                styleClass="secondary-button"/>
+
                         <Button text="Refresh"
                                 onAction="#handleRefresh"
                                 styleClass="icon-button"/>
-                        <Button text="Back to menu"
-                                onAction="#handleBackToMenu"
-                                styleClass="icon-button"/>
-                        <Button text="Logout"
-                                onAction="#handleLogout"
-                                styleClass="danger-button"/>
                     </HBox>
                 </HBox>
 
-                <!-- ТАБЛИЦЯ ГРУП -->
+                <!-- Таблиця груп -->
                 <TableView fx:id="groupsTable" VBox.vgrow="ALWAYS">
                     <columns>
-                        <TableColumn fx:id="idColumn"
-                                     text="ID"
-                                     prefWidth="80"/>
-                        <TableColumn fx:id="nameColumn"
-                                     text="Name"
-                                     prefWidth="250"/>
-                        <TableColumn fx:id="descriptionColumn"
-                                     text="Description"
-                                     prefWidth="600"/>
+                        <TableColumn fx:id="idColumn" text="ID" prefWidth="60"/>
+                        <TableColumn fx:id="nameColumn" text="Name" prefWidth="230"/>
+                        <TableColumn fx:id="descriptionColumn" text="Description" prefWidth="500"/>
                     </columns>
                 </TableView>
 
-                <HBox spacing="12" alignment="CENTER_RIGHT">
-
+                <!-- Нижня панель з кнопками дій -->
+                <HBox spacing="10" alignment="CENTER_RIGHT">
                     <Button text="Open tasks"
                             onAction="#handleOpenGroup"
-                            styleClass="secondary-button action-button"/>
+                            styleClass="secondary-button"/>
 
                     <Button text="Open resources"
                             onAction="#handleOpenResources"
-                            styleClass="secondary-button action-button"/>
+                            styleClass="secondary-button"/>
 
                     <Region HBox.hgrow="ALWAYS"/>
 
                     <Button text="Add group"
                             onAction="#handleAddGroup"
-                            styleClass="primary-button action-button"/>
+                            styleClass="primary-button"/>
 
                     <Button text="Edit group"
                             onAction="#handleEditGroup"
-                            styleClass="secondary-button action-button"/>
+                            styleClass="secondary-button"/>
 
                     <Button text="Delete group"
                             onAction="#handleDeleteGroup"
-                            styleClass="danger-button action-button"/>
+                            styleClass="danger-button"/>
 
                     <Button text="Members"
                             onAction="#handleOpenMembers"
-                            styleClass="secondary-button action-button"/>
+                            styleClass="secondary-button"/>
                 </HBox>
 
             </VBox>
+
         </StackPane>
     </center>
 

@@ -60,7 +60,6 @@
     -fx-font-size: 14px;
 }
 
-/* ховер-ефект */
 .primary-button:hover {
     -fx-background-color: linear-gradient(to right, #6c6cff, #856cff);
 }

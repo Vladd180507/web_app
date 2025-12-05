@@ -161,6 +161,15 @@
     -fx-font-weight: bold;
 }
 
+#detailsColumn {
+    -fx-border-width: 0 0 1 0;
+}
+
+#userIdColumn {
+    -fx-alignment: CENTER;
+    -fx-font-weight: bold;
+}
+
 .table-view .column-header .label {
     -fx-text-fill: rgba(173, 199, 239, 0.85);
     -fx-font-size: 14px;

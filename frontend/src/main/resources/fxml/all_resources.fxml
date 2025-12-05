@@ -6,24 +6,39 @@
 
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.proj.frontend.controller.AllResourcesController">
-
-    <top>
-        <HBox spacing="10">
-            <padding><Insets top="10" left="10"/></padding>
-            <Button text="Back" onAction="#handleBack"/>
-            <Label text="All Resources" style="-fx-font-size:20px; -fx-font-weight:bold;"/>
-        </HBox>
-    </top>
+            fx:controller="com.proj.frontend.controller.AllResourcesController"
+            styleClass="root">
 
     <center>
-        <TableView fx:id="resourcesTable">
-            <columns>
-                <TableColumn fx:id="groupColumn" text="Group ID" prefWidth="100"/>
-                <TableColumn fx:id="titleColumn" text="Title" prefWidth="200"/>
-                <TableColumn fx:id="urlColumn" text="URL" prefWidth="300"/>
-            </columns>
-        </TableView>
+        <StackPane alignment="CENTER">
+            <VBox styleClass="app-card"
+                  spacing="20"
+                  maxWidth="950"
+                  prefWidth="950"
+                  maxHeight="580"
+                  prefHeight="580">
+
+                <HBox spacing="10" alignment="CENTER_LEFT" maxWidth="900">
+                    <Button text="Back"
+                            onAction="#handleBack"
+                            styleClass="secondary-button"/>
+
+                    <Region HBox.hgrow="ALWAYS"/>
+
+                    <Label text="All Resources"
+                           styleClass="app-header-title"/>
+                </HBox>
+
+                <TableView fx:id="resourcesTable" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="groupColumn" text="Group ID" prefWidth="100"/>
+                        <TableColumn fx:id="titleColumn" text="Title"     prefWidth="334.3"/>
+                        <TableColumn fx:id="urlColumn"   text="URL"       prefWidth="450"/>
+                    </columns>
+                </TableView>
+
+            </VBox>
+        </StackPane>
     </center>
 
 </BorderPane>

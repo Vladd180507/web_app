@@ -1,5 +1,4 @@
 package com.proj.frontend.controller;
-import com.proj.frontend.controller.MainMenuController;
 
 import com.proj.frontend.App;
 import com.proj.frontend.model.User;
@@ -11,6 +10,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import com.proj.frontend.controller.MainMenuController;
 
 
 public class LoginController {
@@ -72,7 +72,8 @@ public class LoginController {
     private void handleOpenRegister() {
         try {
             FXMLLoader loader = new FXMLLoader(App.class.getResource("/fxml/register.fxml"));
-            Scene scene = new Scene(loader.load(), 1150, 700);
+            Scene scene = new Scene(loader.load(), 1136, 677);
+
             scene.getStylesheets().add(
                     App.class.getResource("/css/login.css").toExternalForm()
             );

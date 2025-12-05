@@ -354,6 +354,10 @@ public class DashboardController {
             FXMLLoader loader = new FXMLLoader(App.class.getResource("/fxml/members.fxml"));
             Scene scene = new Scene(loader.load(), 1150, 700);
 
+            scene.getStylesheets().add(
+                    App.class.getResource("/css/members.css").toExternalForm()
+            );
+
             MembersController controller = loader.getController();
             controller.init(currentUser, selected, backendService, stage);
 

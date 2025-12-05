@@ -25,6 +25,9 @@ public class App extends Application {
         FXMLLoader loader = new FXMLLoader(App.class.getResource("/fxml/login.fxml"));
         Scene scene = new Scene(loader.load(), 1136, 677);
 
+        scene.getStylesheets().add(
+                App.class.getResource("/css/login.css").toExternalForm()
+        );
 
         LoginController controller = loader.getController();
         controller.setBackendService(backendService);

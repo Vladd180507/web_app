@@ -11,13 +11,14 @@
 
     <center>
         <StackPane alignment="CENTER">
+            <!-- Та сама темна карточка, що й в логіні -->
             <VBox spacing="20"
                   alignment="CENTER"
                   styleClass="login-card"
                   maxWidth="400"
                   prefWidth="400"
-                  maxHeight="620"
-                  prefHeight="620">
+                  maxHeight="580"
+                  prefHeight="580">
 
                 <Label text="REGISTER" styleClass="login-title"/>
 

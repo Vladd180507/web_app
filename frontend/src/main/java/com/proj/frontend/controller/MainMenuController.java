@@ -116,14 +116,14 @@ public class MainMenuController {
     private void handleOpenAllResources() {
 
         try {
-            FXMLLoader loader = new FXMLLoader(App.class.getResource("/fxml/activity_log.fxml"));
+            FXMLLoader loader = new FXMLLoader(App.class.getResource("/fxml/all_resources.fxml"));
             Scene scene = new Scene(loader.load(), 1150, 700);
 
             scene.getStylesheets().add(
-                    App.class.getResource("/css/activity_log.css").toExternalForm()
+                    App.class.getResource("/css/all_resources.css").toExternalForm()
             );
 
-            ActivityLogController controller = loader.getController();
+            AllResourcesController controller = loader.getController();
             controller.init(currentUser, backendService, stage);
 
             stage.setScene(scene);

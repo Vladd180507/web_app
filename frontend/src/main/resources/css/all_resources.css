@@ -1,4 +1,4 @@
-/* =============== Фон (той самий, що й у login/dashboard) =============== */
+/* =============== Фон (як у login/dashboard) =============== */
 
 .root {
     -fx-background-image: url("../images/background.jpg");
@@ -6,17 +6,18 @@
     -fx-background-position: center center;
 }
 
-/* =============== Центральна темна картка (як у dashboard) =============== */
+/* =============== Центральна темна картка =============== */
+/* Використовуй той самий клас, що й у dashboard/activity_log: app-card */
 
 .app-card {
-    -fx-background-color: rgba(20, 20, 35, 0.65); /* як у dashboard */
+    -fx-background-color: rgba(20, 20, 35, 0.65);
     -fx-background-radius: 30;
     -fx-padding: 25 30 25 30;
     -fx-spacing: 20;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.6), 40, 0.3, 0, 10);
 }
 
-/* Заголовок "Activity log" – той самий стиль, що й "Groups" */
+/* Заголовок "All Resources" – як "Groups" / "Activity log" */
 
 .app-header-title {
     -fx-text-fill: white;
@@ -24,7 +25,7 @@
     -fx-font-weight: bold;
 }
 
-/* =============== Кнопка "Back to dashboard" (secondary-button) =============== */
+/* =============== Кнопка "Back" (secondary-button) =============== */
 
 .secondary-button {
     -fx-background-color: transparent;
@@ -43,7 +44,9 @@
     -fx-text-fill: #ffffff;
 }
 
-/* =============== Таблиця – як у dashboard =============== */
+/* Якщо захочеш зробити знизу ще якісь кнопки – можна додати .action-button, як у dashboard */
+
+/* =============== Таблиця – той самий темний стиль =============== */
 
 .table-view {
     -fx-background-color: transparent;
@@ -67,7 +70,16 @@
     -fx-border-color: rgba(240, 240, 255, 0.2);
 }
 
-/* Текст у заголовках */
+#urlColumn {
+    -fx-border-width: 0 0 1 0;
+}
+
+#groupColumn {
+    -fx-alignment: CENTER;
+    -fx-font-weight: bold;
+}
+
+/* Текст заголовків колонок */
 .table-view .column-header .label {
     -fx-text-fill: rgba(173, 199, 239, 0.85);
     -fx-font-size: 14px;
@@ -79,7 +91,7 @@
     -fx-background-color: rgba(255, 255, 255, 0.08);
 }
 
-/* Рядки більші, як у оновленому dashboard */
+/* Розмір рядків */
 .table-row-cell {
     -fx-cell-size: 32px;
 }

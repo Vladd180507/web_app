@@ -6,52 +6,80 @@
 
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.proj.frontend.controller.MembersController">
-
-    <top>
-        <HBox spacing="10" alignment="CENTER_LEFT">
-            <padding>
-                <Insets top="10" right="10" bottom="10" left="10"/>
-            </padding>
-            <Button text="Back" onAction="#handleBack"/>
-            <Label fx:id="groupNameLabel"
-                   text="Members"
-                   style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
-        </HBox>
-    </top>
+            fx:controller="com.proj.frontend.controller.MembersController"
+            styleClass="root">
 
     <center>
-        <TableView fx:id="membersTable">
-            <columns>
-                <TableColumn fx:id="nameColumn" text="Name" prefWidth="150"/>
-                <TableColumn fx:id="emailColumn" text="Email" prefWidth="200"/>
-                <TableColumn fx:id="roleColumn" text="Role" prefWidth="100"/>
-                <TableColumn fx:id="joinedAtColumn" text="Joined at" prefWidth="160"/>
-            </columns>
-        </TableView>
+        <StackPane alignment="CENTER">
+            <!-- Центральна темна картка -->
+            <VBox styleClass="app-card"
+                  spacing="20"
+                  maxWidth="950"
+                  prefWidth="950"
+                  maxHeight="580"
+                  prefHeight="580">
+
+                <!-- Верхній бар: Back + назва групи -->
+                <HBox spacing="10" alignment="CENTER_LEFT" maxWidth="900">
+                    <Button text="Back"
+                            onAction="#handleBack"
+                            styleClass="secondary-button"/>
+
+                    <Region HBox.hgrow="ALWAYS"/>
+
+                    <Label fx:id="groupNameLabel"
+                           text="Members"
+                           styleClass="app-header-title"/>
+                </HBox>
+
+                <!-- Таблиця з мемберами -->
+                <TableView fx:id="membersTable" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="nameColumn"     text="Name"      prefWidth="180"/>
+                        <TableColumn fx:id="emailColumn"    text="Email"     prefWidth="260"/>
+                        <TableColumn fx:id="roleColumn"     text="Role"      prefWidth="120"/>
+                        <TableColumn fx:id="joinedAtColumn" text="Joined at" prefWidth="180"/>
+                    </columns>
+                </TableView>
+
+                <!-- Нижній блок: форма додавання + кнопка видалення -->
+                <VBox spacing="10" maxWidth="900">
+
+                    <!-- Форма додавання -->
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="Name:" styleClass="field-label"/>
+                        <TextField fx:id="nameField"
+                                   prefWidth="160"
+                                   promptText="Member name"
+                                   styleClass="input-field"/>
+
+                        <Label text="Email:" styleClass="field-label"/>
+                        <TextField fx:id="emailField"
+                                   prefWidth="220"
+                                   promptText="Email"
+                                   styleClass="input-field"/>
+
+                        <Label text="Role:" styleClass="field-label"/>
+                        <ComboBox fx:id="roleCombo"
+                                  prefWidth="120"
+                                  styleClass="combo-field"/>
+
+                        <Button text="Add member"
+                                onAction="#handleAddMember"
+                                styleClass="primary-button action-button"/>
+                    </HBox>
+
+                    <!-- Кнопка видалення -->
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Button text="Remove selected"
+                                onAction="#handleRemoveMember"
+                                styleClass="danger-button action-button"/>
+                    </HBox>
+
+                </VBox>
+
+            </VBox>
+        </StackPane>
     </center>
-
-    <bottom>
-        <VBox spacing="10">
-            <padding>
-                <Insets top="10" right="10" bottom="10" left="10"/>
-            </padding>
-
-            <HBox spacing="10" alignment="CENTER_LEFT">
-                <Label text="Name:"/>
-                <TextField fx:id="nameField" prefWidth="150"/>
-                <Label text="Email:"/>
-                <TextField fx:id="emailField" prefWidth="180"/>
-                <Label text="Role:"/>
-                <ComboBox fx:id="roleCombo" prefWidth="100"/>
-                <Button text="Add member" onAction="#handleAddMember"/>
-            </HBox>
-
-            <HBox spacing="10" alignment="CENTER_LEFT">
-                <Button text="Remove selected" onAction="#handleRemoveMember"/>
-            </HBox>
-
-        </VBox>
-    </bottom>
 
 </BorderPane>
