@@ -52,6 +52,9 @@ public class TasksController {
     @FXML
     private Label deadlineSummaryLabel;
 
+    @FXML
+    private Label groupLabel;
+
     private BackendService backendService;
     private User currentUser;
     private Group currentGroup;
@@ -64,6 +67,10 @@ public class TasksController {
         this.stage = stage;
 
         stage.setTitle("Tasks - " + group.getName());
+
+        if (groupLabel != null) {
+            groupLabel.setText("Tasks – " + group.getName());
+        }
 
         setupTable();
         setupStatusCombo();

@@ -6,43 +6,66 @@
 
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.proj.frontend.controller.ResourcesController">
-
-    <top>
-        <HBox spacing="10" alignment="CENTER_LEFT">
-            <padding>
-                <Insets top="10" right="10" bottom="10" left="10"/>
-            </padding>
-            <Button text="Back to dashboard" onAction="#handleBack"/>
-            <Label fx:id="groupLabel" text="Group: "
-                   style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
-        </HBox>
-    </top>
+            fx:controller="com.proj.frontend.controller.ResourcesController"
+            styleClass="root">
 
     <center>
-        <TableView fx:id="resourcesTable">
-            <columns>
-                <TableColumn fx:id="idColumn" text="ID" prefWidth="60"/>
-                <TableColumn fx:id="titleColumn" text="Title" prefWidth="180"/>
-                <TableColumn fx:id="typeColumn" text="Type" prefWidth="100"/>
-                <TableColumn fx:id="urlColumn" text="URL" prefWidth="300"/>
-            </columns>
-        </TableView>
+        <StackPane alignment="CENTER">
+            <!-- Темна картка по центру -->
+            <VBox styleClass="app-card"
+                  spacing="20"
+                  maxWidth="950"
+                  prefWidth="950"
+                  maxHeight="580"
+                  prefHeight="580">
+
+                <!-- Верхній бар: Back + назва групи -->
+                <HBox spacing="10" alignment="CENTER_LEFT" maxWidth="900">
+                    <Button text="Back to dashboard"
+                            onAction="#handleBack"
+                            styleClass="secondary-button"/>
+
+                    <Region HBox.hgrow="ALWAYS"/>
+
+                    <Label fx:id="groupLabel"
+                           text="Group:"
+                           styleClass="app-header-title"/>
+                </HBox>
+
+                <!-- Таблиця ресурсів -->
+                <TableView fx:id="resourcesTable"
+                           VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="idColumn"    text="ID"    prefWidth="60"/>
+                        <TableColumn fx:id="titleColumn" text="Title" prefWidth="200"/>
+                        <TableColumn fx:id="typeColumn"  text="Type"  prefWidth="120"/>
+                        <TableColumn fx:id="urlColumn"   text="URL"   prefWidth="400"/>
+                    </columns>
+                </TableView>
+
+                <!-- Нижня форма додавання -->
+                <HBox spacing="10" alignment="CENTER_LEFT" maxWidth="900">
+                    <Label text="New resource:" styleClass="field-label"/>
+
+                    <TextField fx:id="titleField"
+                               promptText="Title"
+                               prefWidth="180"
+                               styleClass="input-field"/>
+
+                    <TextField fx:id="urlField"
+                               promptText="URL"
+                               prefWidth="260"
+                               styleClass="input-field"/>
+
+                    <Region HBox.hgrow="ALWAYS"/>
+
+                    <Button text="Add resource"
+                            onAction="#handleAddResource"
+                            styleClass="primary-action-button"/>
+                </HBox>
+
+            </VBox>
+        </StackPane>
     </center>
-
-    <bottom>
-        <VBox spacing="10">
-            <padding>
-                <Insets top="10" right="10" bottom="10" left="10"/>
-            </padding>
-
-            <HBox spacing="10" alignment="CENTER_LEFT">
-                <Label text="New resource:"/>
-                <TextField fx:id="titleField" promptText="Title" prefWidth="160"/>
-                <TextField fx:id="urlField" promptText="URL" prefWidth="260"/>
-                <Button text="Add resource" onAction="#handleAddResource"/>
-            </HBox>
-        </VBox>
-    </bottom>
 
 </BorderPane>

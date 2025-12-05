@@ -162,6 +162,10 @@ public class DashboardController {
             FXMLLoader loader = new FXMLLoader(App.class.getResource("/fxml/tasks.fxml"));
             Scene scene = new Scene(loader.load(), 1150, 700);
 
+            scene.getStylesheets().add(
+                    App.class.getResource("/css/tasks.css").toExternalForm()
+            );
+
             TasksController controller = loader.getController();
             controller.init(currentUser, group, backendService, stage);
 
@@ -188,6 +192,10 @@ public class DashboardController {
             FXMLLoader loader = new FXMLLoader(App.class.getResource("/fxml/resources.fxml"));
             Scene scene = new Scene(loader.load(), 1150, 700);
 
+            scene.getStylesheets().add(
+                    App.class.getResource("/css/resources.css").toExternalForm()
+            );
+
             ResourcesController controller = loader.getController();
             controller.init(currentUser, group, backendService, stage);
 
@@ -198,7 +206,6 @@ public class DashboardController {
             showError("Cannot open resources view: " + e.getMessage());
         }
     }
-
     private void showError(String msg) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setHeaderText("Error");

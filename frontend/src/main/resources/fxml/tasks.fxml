@@ -6,58 +6,108 @@
 
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.proj.frontend.controller.TasksController">
-
-    <top>
-        <HBox spacing="10" alignment="CENTER_LEFT">
-            <padding>
-                <Insets top="10" right="10" bottom="10" left="10"/>
-            </padding>
-            <Button text="Back to dashboard" onAction="#handleBack"/>
-            <Label fx:id="groupLabel" text="Group: " style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
-        </HBox>
-    </top>
+            fx:controller="com.proj.frontend.controller.TasksController"
+            styleClass="root">
 
     <center>
-        <TableView fx:id="tasksTable">
-            <columns>
-                <TableColumn fx:id="idColumn" text="ID" prefWidth="60"/>
-                <TableColumn fx:id="titleColumn" text="Title" prefWidth="160"/>
-                <TableColumn fx:id="descriptionColumn" text="Description" prefWidth="260"/>
-                <TableColumn fx:id="statusColumn" text="Status" prefWidth="100"/>
-                <TableColumn fx:id="deadlineColumn" text="Deadline" prefWidth="120"/>
-            </columns>
-        </TableView>
+        <StackPane alignment="CENTER">
+            <!-- Темна картка по центру -->
+            <VBox styleClass="app-card"
+                  spacing="20"
+                  maxWidth="900"
+                  prefWidth="900"
+                  maxHeight="600"
+                  prefHeight="600">
+
+                <!-- ВЕРХНІЙ BAR: Back + назва групи -->
+                <HBox spacing="10" alignment="CENTER_LEFT" maxWidth="900">
+                    <Button text="Back to dashboard"
+                            onAction="#handleBack"
+                            styleClass="secondary-button"/>
+
+                    <Region HBox.hgrow="ALWAYS"/>
+
+                    <Label fx:id="groupLabel"
+                           text="Tasks"
+                           styleClass="app-header-title"/>
+                </HBox>
+
+                <!-- ТАБЛИЦЯ ЗАВДАНЬ -->
+                <TableView fx:id="tasksTable"
+                           VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="idColumn"          text="ID"          prefWidth="60"/>
+                        <TableColumn fx:id="titleColumn"       text="Title"       prefWidth="170"/>
+                        <TableColumn fx:id="descriptionColumn" text="Description" prefWidth="260"/>
+                        <TableColumn fx:id="statusColumn"      text="Status"      prefWidth="110"/>
+                        <TableColumn fx:id="deadlineColumn"    text="Deadline"    prefWidth="130"/>
+                    </columns>
+                </TableView>
+
+                <!-- НИЖНЯ ПАНЕЛЬ (додавання / статус / статистика) -->
+                <VBox spacing="8" alignment="CENTER_LEFT" maxWidth="900">
+
+                    <!-- Нова задача -->
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="New task:" styleClass="field-label"/>
+
+                        <TextField fx:id="titleField"
+                                   promptText="Title"
+                                   prefWidth="160"
+                                   styleClass="input-field"/>
+
+                        <TextField fx:id="descriptionField"
+                                   promptText="Description"
+                                   prefWidth="260"
+                                   styleClass="input-field"/>
+
+                        <DatePicker fx:id="deadlinePicker"
+                                    promptText="Deadline"
+                                    styleClass="date-field"/>
+
+                        <Button text="Add task"
+                                onAction="#handleAddTask"
+                                styleClass="primary-action-button"/>
+
+                        <Button text="Edit task"
+                                onAction="#handleEditTask"
+                                styleClass="secondary-button"/>
+
+                        <Button text="Delete task"
+                                onAction="#handleDeleteTask"
+                                styleClass="danger-action-button"/>
+                    </HBox>
+
+                    <!-- Зміна статусу -->
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="Change status:" styleClass="field-label"/>
+
+                        <ComboBox fx:id="statusCombo"
+                                  prefWidth="160"
+                                  styleClass="combo-field"/>
+
+                        <Button text="Apply to selected task"
+                                onAction="#handleChangeStatus"
+                                styleClass="secondary-button"/>
+                    </HBox>
+
+                    <!-- Статистика -->
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label fx:id="deadlineSummaryLabel"
+                               text=""
+                               styleClass="summary-label"/>
+
+                        <Region HBox.hgrow="ALWAYS"/>
+
+                        <Button text="Show statistics"
+                                onAction="#handleShowStats"
+                                styleClass="secondary-button"/>
+                    </HBox>
+
+                </VBox>
+
+            </VBox>
+        </StackPane>
     </center>
-
-    <bottom>
-        <VBox spacing="10">
-            <padding>
-                <Insets top="10" right="10" bottom="10" left="10"/>
-            </padding>
-
-            <HBox spacing="10" alignment="CENTER_LEFT">
-                <Label text="New task:"/>
-                <TextField fx:id="titleField" promptText="Title" prefWidth="150"/>
-                <TextField fx:id="descriptionField" promptText="Description" prefWidth="250"/>
-                <DatePicker fx:id="deadlinePicker" promptText="Deadline"/>
-                <Button text="Add task" onAction="#handleAddTask"/>
-                <Button text="Edit task" onAction="#handleEditTask"/>
-                <Button text="Delete task" onAction="#handleDeleteTask"/>
-            </HBox>
-
-            <HBox spacing="10" alignment="CENTER_LEFT">
-                <Label text="Change status:"/>
-                <ComboBox fx:id="statusCombo" prefWidth="150"/>
-                <Button text="Apply to selected task" onAction="#handleChangeStatus"/>
-            </HBox>
-
-            <HBox spacing="10" alignment="CENTER_LEFT">
-                <Button text="Show statistics" onAction="#handleShowStats"/>
-            </HBox>
-
-            <Label fx:id="deadlineSummaryLabel" text=""/>
-        </VBox>
-    </bottom>
 
 </BorderPane>
