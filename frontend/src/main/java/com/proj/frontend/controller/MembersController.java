@@ -150,7 +150,11 @@ public class MembersController {
     private void handleBack() {
         try {
             FXMLLoader loader = new FXMLLoader(App.class.getResource("/fxml/dashboard.fxml"));
-            Scene scene = new Scene(loader.load());
+            Scene scene = new Scene(loader.load(), 1150, 700);
+
+            scene.getStylesheets().add(
+                    App.class.getResource("/css/dashboard.css").toExternalForm()
+            );
 
             DashboardController controller = loader.getController();
             controller.init(currentUser, backendService, stage);
