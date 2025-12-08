@@ -1,17 +1,23 @@
 package com.proj.frontend.model;
 
+import com.google.gson.annotations.SerializedName;
+
 public class Task {
+    @SerializedName("taskId")
     private Long id;
+
     private Long groupId;
     private String title;
     private String description;
-    private String status;
-    private String deadline; // YYYY-MM-DD або null
+    private String status;     // "OPEN", "IN_PROGRESS", "DONE"
+    private String deadline;   // Рядок дати
 
-    public Task() {
-    }
+    @SerializedName("createdByName")
+    private String creatorName;
 
-    // Старий конструктор (без дедлайну) – щоб нічого не зламати
+    public Task() {}
+
+    // ✅ Цей конструктор потрібен для MockBackendService (ініціалізація)
     public Task(Long id, Long groupId, String title, String description, String status) {
         this.id = id;
         this.groupId = groupId;
@@ -21,59 +27,35 @@ public class Task {
         this.deadline = null;
     }
 
-    // Новий конструктор – з дедлайном
+    // ✅ Цей конструктор для створення нових задач
     public Task(Long id, Long groupId, String title, String description, String status, String deadline) {
-        this(id, groupId, title, description, status);
-        this.deadline = deadline;
-    }
-
-    // геттери/сеттери
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
         this.id = id;
-    }
-
-    public Long getGroupId() {
-        return groupId;
-    }
-
-    public void setGroupId(Long groupId) {
         this.groupId = groupId;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
         this.title = title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
         this.status = status;
-    }
-
-    public String getDeadline() {
-        return deadline;
-    }
-
-    public void setDeadline(String deadline) {
         this.deadline = deadline;
     }
+
+    // Getters and Setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public Long getGroupId() { return groupId; }
+    public void setGroupId(Long groupId) { this.groupId = groupId; }
+
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
+
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+
+    public String getDeadline() { return deadline; }
+    public void setDeadline(String deadline) { this.deadline = deadline; }
+
+    public String getCreatorName() { return creatorName; }
+    public void setCreatorName(String creatorName) { this.creatorName = creatorName; }
 }

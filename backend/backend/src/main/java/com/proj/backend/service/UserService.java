@@ -44,9 +44,13 @@ public class UserService implements UserDetailsService  {
                 .passwordHash(hashedPassword)
                 .build();
 
-        User saved = userRepository.save(user);
-        activityLogService.logActivity(user.getUserId(), "USER_REGISTERED", "Новый пользователь зарегистрирован: " + name);
-        return UserDto.fromEntity(saved);
+        // 🔥 ВИПРАВЛЕННЯ ТУТ: присвоюємо результат у змінну savedUser
+        User savedUser = userRepository.saveAndFlush(user);
+
+        // Використовуємо savedUser для отримання ID
+        activityLogService.logActivity(savedUser.getUserId(), "USER_REGISTERED", "Новый пользователь зарегистрирован: " + name);
+
+        return UserDto.fromEntity(savedUser);
     }
 
     // ✅ ЛОГИН
@@ -107,8 +111,18 @@ public class UserService implements UserDetailsService  {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
+        System.out.println(">>> LOADING USER FROM DB: " + email);
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> {
+                    System.err.println("!!! USER NOT FOUND IN DB: " + email);
+                    return new UsernameNotFoundException("User not found");
+                });
+
+        System.out.println(">>> FOUND USER ID: " + user.getUserId());
+        System.out.println(">>> STORED PASSWORD HASH: " + user.getPassword()); // Подивимось, чи є там хеш
+
+        return user;
     }
 
 }

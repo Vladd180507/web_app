@@ -15,7 +15,7 @@ import com.proj.frontend.controller.LoginController;
 public class App extends Application {
 
     // можна швидко переключати тип бекенду
-    private static final boolean USE_REAL_API = false;
+    private static final boolean USE_REAL_API = true;
 
     private BackendService backendService =
             USE_REAL_API ? new ApiBackendService() : new MockBackendService();
