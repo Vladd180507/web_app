@@ -81,7 +81,11 @@ public class StatsController {
     private void handleBack() {
         try {
             FXMLLoader loader = new FXMLLoader(App.class.getResource("/fxml/tasks.fxml"));
-            Scene scene = new Scene(loader.load());
+            Scene scene = new Scene(loader.load(), 1150, 700);
+
+            scene.getStylesheets().add(
+                    App.class.getResource("/css/tasks.css").toExternalForm()
+            );
 
             TasksController controller = loader.getController();
             controller.init(currentUser, currentGroup, backendService, stage);

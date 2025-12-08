@@ -1,0 +1,165 @@
+/* ================== ОСНОВА ДІАЛОГА ================== */
+
+.dialog-pane.custom-task-dialog {
+    -fx-background-color: #1b1b2b;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+    -fx-border-width: 0;
+}
+
+.dialog-pane.custom-task-dialog > .header-panel {
+    -fx-background-color: #1b1b2b;
+    -fx-background-radius: 0;
+    -fx-padding: 15 25 5 25;
+}
+
+.dialog-pane.custom-task-dialog > .header-panel .label {
+    -fx-text-fill: white;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+
+.dialog-pane.custom-task-dialog > .content {
+    -fx-background-color: #1b1b2b;
+    -fx-padding: 10 20 10 20;
+}
+
+.dialog-pane.custom-task-dialog > .button-bar > .container {
+    -fx-background-color: #1b1b2b;
+    -fx-padding: 10 25 20 25;
+}
+
+/* ================== LABELS ================== */
+
+.dialog-pane.custom-task-dialog .label {
+    -fx-text-fill: #e6e6e6;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+/* ===========================================================
+      ПОВЕРНУТИЙ СТИЛЬ INPUT-ПОЛІВ (ЯК У ADD TASK В МЕНЮ)
+   =========================================================== */
+
+.dialog-pane.custom-task-dialog .text-field,
+.dialog-pane.custom-task-dialog .date-picker {
+    -fx-background-color: rgba(35, 35, 60, 0.9); /* повертаємо старий стиль */
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: rgba(220,220,220,0.6);
+    -fx-background-radius: 14;
+    -fx-border-radius: 14;
+    -fx-border-color: transparent;
+    -fx-padding: 6 14 6 14;
+    -fx-font-size: 14px;
+}
+
+/* ================= DARK DATE PICKER POPUP (FINAL) ================= */
+
+/* Сам popup */
+.date-picker-popup {
+    -fx-background-color: rgba(20, 20, 35, 0.97);
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-border-color: rgba(255,255,255,0.18);
+    -fx-border-width: 1;
+}
+
+/* Верхня панель (стрілки + місяць + рік) */
+.date-picker-popup > .month-year-pane {
+    -fx-background-color: transparent;
+    -fx-padding: 8 12 8 12;
+}
+
+/* Текст "December 2025" */
+.date-picker-popup > .month-year-pane .label {
+    -fx-text-fill: #e8e8f9;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+/* Кнопки-стрілки */
+.date-picker-popup .spinner > .button,
+.date-picker-popup > .month-year-pane > .button {
+    -fx-background-color: linear-gradient(to right, #5b5bff, #745bff);
+    -fx-background-radius: 18;
+    -fx-text-fill: white;
+    -fx-cursor: hand;
+    -fx-padding: 6 10;
+}
+
+.date-picker-popup .spinner > .button:hover,
+.date-picker-popup > .month-year-pane > .button:hover {
+    -fx-background-color: linear-gradient(to right, #6c6cff, #856cff);
+}
+
+/* Центральна область з днями */
+.date-picker-popup > .calendar-grid {
+    -fx-background-color: transparent;
+}
+
+/* УСІ лейбли всередині popup (Mon, Tue, числа, тощо) */
+.date-picker-popup .label {
+    -fx-text-fill: #f5f5f5;
+}
+
+/* Комірки календаря (і дні тижня, і числа) */
+.date-picker-popup .cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #f5f5f5;
+    -fx-font-size: 13px;
+}
+
+/* Header днів тижня — трошки світліший */
+.date-picker-popup .day-name-cell {
+    -fx-text-fill: #c5cae9;
+    -fx-font-weight: bold;
+}
+
+/* Hover по дню */
+.date-picker-popup .cell:hover {
+    -fx-background-color: rgba(90, 90, 200, 0.35);
+}
+
+/* Виділений день */
+.date-picker-popup .cell:selected {
+    -fx-background-color: rgba(90, 90, 200, 0.7);
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+/* Дні з іншого місяця / disabled */
+.date-picker-popup .cell:disabled {
+    -fx-text-fill: rgba(200,200,200,0.25);
+}
+
+/* ================== BUTTONS ================== */
+
+.dialog-pane.custom-task-dialog .button {
+    -fx-background-radius: 999;
+    -fx-border-radius: 999;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 7 26 7 26;
+}
+
+.dialog-pane.custom-task-dialog .button:default {
+    -fx-background-color: linear-gradient(to right, #5b5bff, #745bff);
+    -fx-text-fill: white;
+}
+
+.dialog-pane.custom-task-dialog .button:default:hover {
+    -fx-background-color: linear-gradient(to right, #6c6cff, #856cff);
+}
+
+.dialog-pane.custom-task-dialog .button:cancel {
+    -fx-background-color: transparent;
+    -fx-text-fill: #dddddd;
+    -fx-border-color: #777777;
+    -fx-border-width: 1;
+}
+
+.dialog-pane.custom-task-dialog .button:cancel:hover {
+    -fx-background-color: rgba(255,255,255,0.08);
+    -fx-border-color: #aaaaaa;
+    -fx-text-fill: white;
+}

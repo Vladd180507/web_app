@@ -44,27 +44,13 @@
                     </columns>
                 </TableView>
 
-                <!-- НИЖНЯ ПАНЕЛЬ (додавання / статус / статистика) -->
+                <!-- НИЖНЯ ПАНЕЛЬ -->
                 <VBox spacing="8" alignment="CENTER_LEFT" maxWidth="900">
 
-                    <!-- Нова задача -->
+                    <!-- ПЕРШИЙ РЯД: Add/Edit/Delete + Change status праворуч -->
                     <HBox spacing="10" alignment="CENTER_LEFT">
-                        <Label text="New task:" styleClass="field-label"/>
 
-                        <TextField fx:id="titleField"
-                                   promptText="Title"
-                                   prefWidth="160"
-                                   styleClass="input-field"/>
-
-                        <TextField fx:id="descriptionField"
-                                   promptText="Description"
-                                   prefWidth="260"
-                                   styleClass="input-field"/>
-
-                        <DatePicker fx:id="deadlinePicker"
-                                    promptText="Deadline"
-                                    styleClass="date-field"/>
-
+                        <!-- Ліва група кнопок -->
                         <Button text="Add task"
                                 onAction="#handleAddTask"
                                 styleClass="primary-action-button"/>
@@ -76,10 +62,11 @@
                         <Button text="Delete task"
                                 onAction="#handleDeleteTask"
                                 styleClass="danger-action-button"/>
-                    </HBox>
 
-                    <!-- Зміна статусу -->
-                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <!-- Розтягувач -->
+                        <Region HBox.hgrow="ALWAYS"/>
+
+                        <!-- Права частина: зміна статусу -->
                         <Label text="Change status:" styleClass="field-label"/>
 
                         <ComboBox fx:id="statusCombo"
@@ -91,7 +78,7 @@
                                 styleClass="secondary-button"/>
                     </HBox>
 
-                    <!-- Статистика -->
+                    <!-- ДРУГИЙ РЯД: підсумок дедлайнів + Show statistics -->
                     <HBox spacing="10" alignment="CENTER_LEFT">
                         <Label fx:id="deadlineSummaryLabel"
                                text=""

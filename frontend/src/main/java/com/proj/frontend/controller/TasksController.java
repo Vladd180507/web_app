@@ -13,6 +13,11 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import com.proj.frontend.controller.StatsController;
+import javafx.geometry.Insets;
+import javafx.scene.Node;
+import javafx.scene.layout.GridPane;
+import javafx.scene.control.ButtonBar;
+import java.util.Optional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -141,25 +146,93 @@ public class TasksController {
 
     @FXML
     private void handleAddTask() {
-        String title = titleField.getText();
-        String description = descriptionField.getText();
-        LocalDate date = deadlinePicker.getValue();
+        Dialog<TaskInput> dialog = new Dialog<>();
+        dialog.setTitle("New task");
+        dialog.setHeaderText("Create new task");
 
-        if (title == null || title.isBlank()) {
-            showError("Title is required.");
-            return;
+        if (stage != null) {
+            dialog.initOwner(stage);
         }
 
-        String deadline = (date != null) ? date.toString() : null;
+        DialogPane pane = dialog.getDialogPane();
+        pane.getStylesheets().add(
+                App.class.getResource("/css/task_dialog.css").toExternalForm()
+        );
+        pane.getStyleClass().add("custom-task-dialog");
+
+        ButtonType createButtonType =
+                new ButtonType("Create", ButtonBar.ButtonData.OK_DONE);
+        pane.getButtonTypes().setAll(createButtonType, ButtonType.CANCEL);
+
+        // === Формуємо вміст ===
+        GridPane grid = new GridPane();
+        grid.setHgap(12);
+        grid.setVgap(14);                      // ↑ більший вертикальний відступ
+        grid.setPadding(new Insets(20, 20, 20, 20));
+
+        // ЄДИНА СТАНДАРТНА ШИРИНА
+        double fieldWidth = 300;
+
+        TextField titleFieldLocal = new TextField();
+        titleFieldLocal.setPromptText("Title");
+        titleFieldLocal.setPrefWidth(fieldWidth);
+
+        TextField descriptionFieldLocal = new TextField();
+        descriptionFieldLocal.setPromptText("Description");
+        descriptionFieldLocal.setPrefWidth(fieldWidth);
+
+        DatePicker deadlinePickerLocal = new DatePicker();
+        deadlinePickerLocal.setPromptText("Deadline");
+        deadlinePickerLocal.setPrefWidth(fieldWidth);
+
+        grid.add(new Label("Title:"), 0, 0);
+        grid.add(titleFieldLocal, 1, 0);
+
+        grid.add(new Label("Description:"), 0, 1);
+        grid.add(descriptionFieldLocal, 1, 1);
+
+        grid.add(new Label("Deadline:"), 0, 2);
+        grid.add(deadlinePickerLocal, 1, 2);
+
+        // → додаємо великий нижній відступ перед кнопками
+        GridPane.setMargin(deadlinePickerLocal, new Insets(0, 0, 18, 0));
+
+        pane.setContent(grid);
+
+        Node createButton = pane.lookupButton(createButtonType);
+        createButton.setDisable(true);
+
+        titleFieldLocal.textProperty().addListener((obs, oldVal, newVal) ->
+                createButton.setDisable(newVal == null || newVal.trim().isEmpty())
+        );
+
+        dialog.setResultConverter(button -> {
+            if (button == createButtonType) {
+                return new TaskInput(
+                        titleFieldLocal.getText(),
+                        descriptionFieldLocal.getText(),
+                        deadlinePickerLocal.getValue()
+                );
+            }
+            return null;
+        });
+
+        Optional<TaskInput> result = dialog.showAndWait();
+        if (result.isEmpty()) return;
+
+        TaskInput input = result.get();
+        String deadline = (input.deadline != null) ? input.deadline.toString() : null;
 
         try {
-            Task created = backendService.createTask(currentGroup.getId(), title, description, deadline);
+            Task created = backendService.createTask(
+                    currentGroup.getId(),
+                    input.title,
+                    input.description,
+                    deadline
+            );
+
             tasksTable.getItems().add(created);
             updateDeadlineSummary(tasksTable.getItems());
-
-            titleField.clear();
-            descriptionField.clear();
-            deadlinePicker.setValue(null);
 
         } catch (Exception e) {
             showError("Failed to create task: " + e.getMessage());
@@ -217,7 +290,11 @@ public class TasksController {
     private void handleShowStats() {
         try {
             FXMLLoader loader = new FXMLLoader(App.class.getResource("/fxml/stats.fxml"));
-            Scene scene = new Scene(loader.load());
+            Scene scene = new Scene(loader.load(), 1150, 700);
+
+            scene.getStylesheets().add(
+                    App.class.getResource("/css/stats.css").toExternalForm()
+            );
 
             StatsController controller = loader.getController();
             controller.init(currentUser, currentGroup, backendService, stage);
@@ -238,46 +315,87 @@ public class TasksController {
             return;
         }
 
-        // --- Title ---
-        TextInputDialog titleDialog = new TextInputDialog(selected.getTitle());
-        titleDialog.setHeaderText("Edit task");
-        titleDialog.setContentText("New title:");
-        var newTitleOpt = titleDialog.showAndWait();
-        if (newTitleOpt.isEmpty()) return;
+        // ---------- ДІАЛОГ ДЛЯ РЕДАГУВАННЯ ----------
+        Dialog<TaskInput> dialog = new Dialog<>();
+        dialog.setTitle("Edit task");
+        dialog.setHeaderText("Edit task");
 
-        // --- Description ---
-        TextInputDialog descDialog = new TextInputDialog(selected.getDescription());
-        descDialog.setHeaderText("Edit task");
-        descDialog.setContentText("New description:");
-        var newDescOpt = descDialog.showAndWait();
-        if (newDescOpt.isEmpty()) return;
+        // стилі – ті ж самі, що й для add task
+        dialog.getDialogPane().getStylesheets().add(
+                App.class.getResource("/css/task_dialog.css").toExternalForm()
+        );
+        dialog.getDialogPane().getStyleClass().add("custom-task-dialog");
 
-        // --- Deadline ---
-        Dialog<String> deadlineDialog = new Dialog<>();
-        deadlineDialog.setHeaderText("Edit deadline");
+        ButtonType saveButtonType =
+                new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(saveButtonType, ButtonType.CANCEL);
 
-        DatePicker picker = new DatePicker();
+        // ---------- ФОРМА ВСЕРЕДИНІ ----------
+        GridPane grid = new GridPane();
+        grid.setHgap(12);
+        grid.setVgap(16);
+        grid.setPadding(new Insets(20, 25, 30, 25));   // трішки більше знизу, щоб кнопки не були впритул
+
+        TextField titleFieldLocal = new TextField();
+        titleFieldLocal.setPromptText("Title");
+        titleFieldLocal.setText(selected.getTitle());
+
+        TextField descriptionFieldLocal = new TextField();
+        descriptionFieldLocal.setPromptText("Description");
+        descriptionFieldLocal.setText(selected.getDescription());
+
+        DatePicker deadlinePickerLocal = new DatePicker();
+        deadlinePickerLocal.setPromptText("Deadline");
         if (selected.getDeadline() != null && !selected.getDeadline().isBlank()) {
-            picker.setValue(LocalDate.parse(selected.getDeadline()));
+            try {
+                deadlinePickerLocal.setValue(LocalDate.parse(selected.getDeadline()));
+            } catch (Exception ignored) {
+                // якщо формат не ISO yyyy-MM-dd – просто залишаємо пустим
+            }
         }
 
-        deadlineDialog.getDialogPane().setContent(picker);
-        deadlineDialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+        grid.add(new Label("Title:"), 0, 0);
+        grid.add(titleFieldLocal, 1, 0);
+        grid.add(new Label("Description:"), 0, 1);
+        grid.add(descriptionFieldLocal, 1, 1);
+        grid.add(new Label("Deadline:"), 0, 2);
+        grid.add(deadlinePickerLocal, 1, 2);
 
-        deadlineDialog.setResultConverter(btn -> {
-            if (btn == ButtonType.OK && picker.getValue() != null) {
-                return picker.getValue().toString();
-            }
-            return selected.getDeadline();
+        dialog.getDialogPane().setContent(grid);
+
+        // Кнопка "Save" активна лише якщо є title
+        Node saveButton = dialog.getDialogPane().lookupButton(saveButtonType);
+        saveButton.setDisable(titleFieldLocal.getText().trim().isEmpty());
+
+        titleFieldLocal.textProperty().addListener((obs, oldVal, newVal) -> {
+            saveButton.setDisable(newVal == null || newVal.trim().isEmpty());
         });
 
-        String newDeadline = deadlineDialog.showAndWait().orElse(selected.getDeadline());
+        // конвертація результату в TaskInput
+        dialog.setResultConverter(button -> {
+            if (button == saveButtonType) {
+                return new TaskInput(
+                        titleFieldLocal.getText(),
+                        descriptionFieldLocal.getText(),
+                        deadlinePickerLocal.getValue()
+                );
+            }
+            return null;
+        });
+
+        var result = dialog.showAndWait();
+        if (result.isEmpty()) {
+            return; // Cancel або закрили вікно
+        }
+
+        TaskInput input = result.get();
+        String newDeadline = (input.deadline != null) ? input.deadline.toString() : null;
 
         try {
             Task updated = backendService.updateTask(
                     selected.getId(),
-                    newTitleOpt.get(),
-                    newDescOpt.get(),
+                    input.title,
+                    input.description,
                     newDeadline
             );
 
@@ -317,6 +435,18 @@ public class TasksController {
             } catch (Exception e) {
                 showError("Failed to delete task: " + e.getMessage());
             }
+        }
+    }
+
+    private static class TaskInput {
+        final String title;
+        final String description;
+        final LocalDate deadline;
+
+        TaskInput(String title, String description, LocalDate deadline) {
+            this.title = title;
+            this.description = description;
+            this.deadline = deadline;
         }
     }
 }

@@ -7,30 +7,47 @@
 
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.proj.frontend.controller.StatsController">
-
-    <top>
-        <HBox spacing="10" alignment="CENTER_LEFT">
-            <padding>
-                <Insets top="10" right="10" bottom="10" left="10"/>
-            </padding>
-            <Button text="Back to tasks" onAction="#handleBack"/>
-            <Label fx:id="groupLabel" text="Group: "
-                   style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
-        </HBox>
-    </top>
+            fx:controller="com.proj.frontend.controller.StatsController"
+            styleClass="root">
 
     <center>
-        <PieChart fx:id="tasksPieChart" title="Tasks by status"/>
-    </center>
+        <StackPane alignment="CENTER">
+            <VBox styleClass="app-card"
+                  spacing="25"
+                  alignment="CENTER"
+                  maxWidth="900"
+                  prefWidth="900"
+                  maxHeight="600"
+                  prefHeight="600">
 
-    <bottom>
-        <HBox alignment="CENTER">
-            <padding>
-                <Insets top="10" right="10" bottom="10" left="10"/>
-            </padding>
-            <Label fx:id="summaryLabel" text="Summary"/>
-        </HBox>
-    </bottom>
+                <!-- Верхній рядок -->
+                <HBox spacing="10"
+                      alignment="CENTER_LEFT"
+                      maxWidth="850">
+                    <Button text="Back to tasks"
+                            onAction="#handleBack"
+                            styleClass="secondary-button"/>
+
+                    <Region HBox.hgrow="ALWAYS"/>
+
+                    <Label fx:id="groupLabel"
+                           text="Group: "
+                           styleClass="app-header-title"/>
+                </HBox>
+
+                <!-- Пиріг -->
+                <PieChart fx:id="tasksPieChart"
+                          prefWidth="600"
+                          prefHeight="350"
+                          legendVisible="true"/>
+
+                <!-- Підсумок -->
+                <Label fx:id="summaryLabel"
+                       text="Summary"
+                       styleClass="summary-label"/>
+
+            </VBox>
+        </StackPane>
+    </center>
 
 </BorderPane>
