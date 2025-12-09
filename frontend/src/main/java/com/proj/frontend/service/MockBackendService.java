@@ -23,7 +23,7 @@ public class MockBackendService implements BackendService {
         groups.add(new Group(1L, "OOP Study", "Exam preparation"));
         groups.add(new Group(2L, "Database Project", "Semestral work"));
 
-        // Початкові задачі (тепер працює, бо ми повернули конструктор)
+        // Початкові задачі
         tasks.add(new Task(1L, 1L, "Read chapter 1", "Basic OOP principles", "OPEN"));
         tasks.add(new Task(2L, 1L, "Do homework", "Polymorphism tasks", "IN_PROGRESS"));
         tasks.add(new Task(3L, 2L, "Design ER diagram", "Database schema", "DONE"));
@@ -47,7 +47,6 @@ public class MockBackendService implements BackendService {
     private void addLog(Long userId, String action, String details) {
         long newId = logs.size() + 1;
         String ts = LocalDateTime.now().toString();
-        // Переконайся, що ActivityLog має такий конструктор
         logs.add(new ActivityLog(newId, userId, action, details, ts));
     }
 
@@ -120,6 +119,7 @@ public class MockBackendService implements BackendService {
     @Override
     public Task createTask(long groupId, String title, String description, String deadline) {
         long newId = tasks.size() + 1;
+        // Mock implementation
         Task t = new Task(newId, groupId, title, description, "OPEN", deadline);
         tasks.add(t);
         addLog(fakeUser.getId(), "CREATE_TASK", "Created task in group " + groupId);
@@ -206,5 +206,17 @@ public class MockBackendService implements BackendService {
     @Override
     public List<ActivityLog> getActivityLogs() {
         return logs;
+    }
+
+    // ✅ ДОДАНО: Реалізація методів для WebSocket (Mock)
+
+    @Override
+    public void connectWebSocket() {
+        System.out.println("MockBackendService: connectWebSocket() called");
+    }
+
+    @Override
+    public void disconnectWebSocket() {
+        System.out.println("MockBackendService: disconnectWebSocket() called");
     }
 }

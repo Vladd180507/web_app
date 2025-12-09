@@ -15,6 +15,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import com.proj.frontend.util.NotificationUtil;
+import com.proj.frontend.model.NotificationMessage;
 
 public class ApiBackendService implements BackendService {
 
@@ -24,6 +26,9 @@ public class ApiBackendService implements BackendService {
 
     private String jwtToken;
     private User currentUser;
+
+    private WebSocketNotificationsClient wsClient;
+    private static final boolean SHOW_MY_OWN_NOTIFICATIONS = true;
 
     public ApiBackendService() {
         this.client = HttpClient.newHttpClient();
@@ -479,5 +484,46 @@ public class ApiBackendService implements BackendService {
             builder.header("Authorization", "Bearer " + jwtToken);
         }
         return builder;
+    }
+
+    @Override
+    public void connectWebSocket() {
+        // Якщо вже є з'єднання, не створюємо нове
+        if (wsClient != null) return;
+
+        wsClient = new WebSocketNotificationsClient(this::handleNotificationMessage);
+
+        // Запускаємо в окремому потоці
+        new Thread(wsClient::connect).start();
+    }
+
+    @Override
+    public void disconnectWebSocket() {
+        if (wsClient != null) {
+            // wsClient.disconnect(); // Якщо є метод disconnect, викликаємо його
+            wsClient = null;
+        }
+    }
+
+    private void handleNotificationMessage(String jsonBody) {
+        try {
+            com.proj.frontend.model.NotificationMessage msg =
+                    gson.fromJson(jsonBody, com.proj.frontend.model.NotificationMessage.class);
+
+            boolean isMyAction = msg.initiatorId != null &&
+                    currentUser != null &&
+                    msg.initiatorId.equals(currentUser.getId());
+
+            if (isMyAction && !SHOW_MY_OWN_NOTIFICATIONS) {
+                return;
+            }
+
+            // ✅ ЗМІНЕНО: "New Event" замість "Нова подія"
+            NotificationUtil.showNotification("New Event", msg.message);
+
+        } catch (Exception e) {
+            // Fallback для простого тексту
+            NotificationUtil.showNotification("New Event", jsonBody);
+        }
     }
 }

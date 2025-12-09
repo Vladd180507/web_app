@@ -37,7 +37,8 @@ public class LoginController {
         try {
             User user = backendService.login(email, password);
 
-            // замість алерта відкриваємо dashboard
+            backendService.connectWebSocket();
+
             openMainMenu(user);
 
         } catch (Exception e) {

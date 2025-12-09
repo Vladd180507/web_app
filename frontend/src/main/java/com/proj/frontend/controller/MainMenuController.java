@@ -137,6 +137,10 @@ public class MainMenuController {
     @FXML
     private void handleLogout() {
         try {
+            if (backendService != null) {
+                backendService.disconnectWebSocket();
+            }
+
             Scene scene = loadScene("/fxml/login.fxml", LOGIN_CSS, 550, 750);
 
             LoginController controller = lastLoader.getController();

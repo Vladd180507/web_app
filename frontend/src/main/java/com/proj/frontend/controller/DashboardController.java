@@ -4,7 +4,6 @@ import com.proj.frontend.App;
 import com.proj.frontend.model.Group;
 import com.proj.frontend.model.User;
 import com.proj.frontend.service.BackendService;
-import com.proj.frontend.service.WebSocketNotificationsClient;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -17,11 +16,8 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
-import com.proj.frontend.controller.MainMenuController;
 
 public class DashboardController {
-
-    private static final boolean ENABLE_WEBSOCKET_NOTIFICATIONS = true;
 
     // розміри головного вікна застосунку
     private static final double APP_WIDTH = 1150;
@@ -31,8 +27,6 @@ public class DashboardController {
     private static final String APP_STYLESHEET = "/css/dashboard.css";
     // CSS для екрану логіну
     private static final String LOGIN_STYLESHEET = "/css/login.css";
-
-    private WebSocketNotificationsClient notificationsClient;
 
     @FXML
     private TableView<Group> groupsTable;
@@ -61,10 +55,6 @@ public class DashboardController {
 
         setupTable();
         loadGroups();
-
-        if (ENABLE_WEBSOCKET_NOTIFICATIONS) {
-            startNotifications();
-        }
     }
 
     @FXML
@@ -101,15 +91,6 @@ public class DashboardController {
         Scene scene = new Scene(loader.load(), APP_WIDTH, APP_HEIGHT);
         scene.getStylesheets().add(
                 App.class.getResource(APP_STYLESHEET).toExternalForm()
-        );
-        return scene;
-    }
-
-    private Scene createLoginScene(FXMLLoader loader) throws IOException {
-        // логін у тебе менший, тому не чіпаю розмір (або постав той, який ти використовуєш)
-        Scene scene = new Scene(loader.load(), 1150, 700);
-        scene.getStylesheets().add(
-                App.class.getResource(LOGIN_STYLESHEET).toExternalForm()
         );
         return scene;
     }
@@ -206,6 +187,7 @@ public class DashboardController {
             showError("Cannot open resources view: " + e.getMessage());
         }
     }
+
     private void showError(String msg) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setHeaderText("Error");
@@ -215,10 +197,6 @@ public class DashboardController {
 
     @FXML
     private void handleLogout() {
-        if (notificationsClient != null) {
-            notificationsClient.disconnect();
-        }
-
         try {
             FXMLLoader loader = new FXMLLoader(App.class.getResource("/fxml/login.fxml"));
             Scene scene = new Scene(loader.load(), 1150, 700);
@@ -251,19 +229,6 @@ public class DashboardController {
             e.printStackTrace();
             showError("Cannot open activity log: " + e.getMessage());
         }
-    }
-
-    private void startNotifications() {
-        notificationsClient = new WebSocketNotificationsClient(message -> {
-            Platform.runLater(() -> {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setHeaderText("Notification");
-                alert.setContentText(message);
-                alert.show();
-            });
-        });
-
-        notificationsClient.connect();
     }
 
     @FXML

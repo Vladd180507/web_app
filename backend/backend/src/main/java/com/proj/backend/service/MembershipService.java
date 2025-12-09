@@ -11,7 +11,9 @@ import com.proj.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.messaging.simp.SimpMessagingTemplate; // ✅ Імпорт
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -21,9 +23,10 @@ public class MembershipService {
     private final MembershipRepository membershipRepository;
     private final GroupRepository groupRepository;
     private final UserRepository userRepository;
-
-    // ✅ ДОДАНО: Ін'єкція сервісу логування
     private final ActivityLogService activityLogService;
+
+    // ✅ Інжектуємо месенджер
+    private final SimpMessagingTemplate messagingTemplate;
 
     public List<MemberDto> getMembers(Long groupId) {
         return membershipRepository.findByGroupGroupId(groupId)
@@ -48,16 +51,25 @@ public class MembershipService {
                 .user(user)
                 .group(group)
                 .role(MembershipRole.MEMBER)
+                .joinedAt(LocalDateTime.now())
                 .build();
 
         Membership saved = membershipRepository.save(membership);
 
-        // ✅ ДОДАНО: Логування вступу
+        // Лог
         activityLogService.logActivity(
                 userId,
                 "GROUP_JOIN",
                 "Користувач " + user.getName() + " приєднався до групи: " + group.getName()
         );
+
+        // ✅ СПОВІЩЕННЯ
+        try {
+            String msg = "Користувач " + user.getName() + " приєднався до групи " + group.getName() + "!";
+            messagingTemplate.convertAndSend("/topic/notifications", msg);
+        } catch (Exception e) {
+            System.err.println("WebSocket error: " + e.getMessage());
+        }
 
         return MemberDto.fromEntity(saved);
     }
@@ -71,7 +83,7 @@ public class MembershipService {
                 .findByUserUserIdAndGroupGroupId(userId, groupId)
                 .orElseThrow(() -> new RuntimeException("User is not in this group"));
 
-        String groupName = membership.getGroup().getName(); // Зберігаємо назву для логу
+        String groupName = membership.getGroup().getName();
 
         if (membership.getRole() == MembershipRole.ADMIN &&
                 membershipRepository.findByGroupGroupId(groupId).size() == 1) {
@@ -80,7 +92,6 @@ public class MembershipService {
 
         membershipRepository.delete(membership);
 
-        // ✅ ДОДАНО: Логування виходу
         activityLogService.logActivity(
                 userId,
                 "GROUP_LEAVE",

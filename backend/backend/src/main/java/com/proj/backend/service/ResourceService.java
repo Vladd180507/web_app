@@ -10,6 +10,7 @@ import com.proj.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,6 +24,9 @@ public class ResourceService {
     private final ResourceRepository resourceRepository;
     private final GroupRepository groupRepository;
     private final UserRepository userRepository;
+
+    // ✅ ДОДАНО: Оголошення поля для WebSockets (без нього код не бачив змінну)
+    private final SimpMessagingTemplate messagingTemplate;
 
     @Transactional
     public ResourceDTO createResource(ResourceDTO dto) {
@@ -41,18 +45,23 @@ public class ResourceService {
                 .uploadedAt(LocalDateTime.now())
                 .build();
 
-        activityLogService.logActivity(
-                user.getUserId(),
-                "RESOURCE_UPLOADED",
-                "Загружен материал: " + dto.getTitle()
-        );
+        Resource updated = resourceRepository.save(resource);
 
-        Resource saved = resourceRepository.save(resource);
-        return convertToDTO(saved);
+        // Лог
+        activityLogService.logActivity(user.getUserId(), "RESOURCE_ADDED", "Added: " + dto.getTitle());
+
+        // ✅ СПОВІЩЕННЯ
+        try {
+            String msg = "Новий матеріал у групі " + group.getName() + ": " + dto.getTitle();
+            messagingTemplate.convertAndSend("/topic/notifications", msg);
+        } catch (Exception e) {
+            System.err.println("WebSocket error: " + e.getMessage());
+        }
+
+        return convertToDTO(updated);
     }
 
     public List<ResourceDTO> getResourcesByGroup(Long groupId) {
-        //  ZMENENÉ: findByGroupGroupId → findByGroupId
         return resourceRepository.findByGroupId(groupId)
                 .stream()
                 .map(this::convertToDTO)
@@ -60,7 +69,6 @@ public class ResourceService {
     }
 
     public List<ResourceDTO> getResourcesByGroupAndType(Long groupId, String type) {
-        //  ZMENENÉ: findByGroupGroupIdAndType → findByGroupIdAndType
         return resourceRepository.findByGroupIdAndType(groupId, type)
                 .stream()
                 .map(this::convertToDTO)
@@ -95,7 +103,6 @@ public class ResourceService {
     }
 
     public Long countResourcesByGroup(Long groupId) {
-        //  ZMENENÉ: countByGroupGroupId → countByGroupId
         return resourceRepository.countByGroupId(groupId);
     }
 
@@ -124,7 +131,7 @@ public class ResourceService {
     public List<ResourceDTO> getAllResources() {
         return resourceRepository.findAll()
                 .stream()
-                .map(this::convertToDTO) // Використовуємо твій існуючий метод конвертації
+                .map(this::convertToDTO)
                 .toList();
     }
 }

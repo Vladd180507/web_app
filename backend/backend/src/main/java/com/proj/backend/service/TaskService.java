@@ -42,7 +42,6 @@ public class TaskService {
         Group group = groupRepository.findById(groupId)
                 .orElseThrow(() -> new RuntimeException("Group not found"));
 
-        // ✅ ВИПРАВЛЕНО: Шукаємо по Email, а не по імені
         User creator = userRepository.findByEmail(creatorEmail)
                 .orElseThrow(() -> new RuntimeException("User not found: " + creatorEmail));
 
@@ -58,15 +57,19 @@ public class TaskService {
 
         Task savedTask = taskRepository.save(task);
 
-        // ✅ Логування
         activityLogService.logActivity(
                 creator.getUserId(),
                 "TASK_CREATED",
-                "Створено завдання: " + title + " у групі " + group.getName()
+                "Created task: " + title + " in group " + group.getName()
         );
 
-        // WebSocket повідомлення (якщо використовуєш)
-        // messagingTemplate.convertAndSend("/topic/group/" + groupId, "New Task: " + title);
+        // ✅ ВІДПРАВЛЯЄМО СПОВІЩЕННЯ
+        try {
+            String msg = "Нове завдання в групі " + group.getName() + ": " + title;
+            messagingTemplate.convertAndSend("/topic/notifications", msg);
+        } catch (Exception e) {
+            System.err.println("WebSocket error: " + e.getMessage());
+        }
 
         return TaskDto.fromEntity(savedTask);
     }

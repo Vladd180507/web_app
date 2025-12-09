@@ -8,19 +8,14 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
-/**
- * Примітивний STOMP-клієнт для підписки на /topic/notifications.
- * Працює поверх Java 11+ HttpClient WebSocket API.
- */
 public class WebSocketNotificationsClient implements WebSocket.Listener {
 
-    // ⚠️ Якщо бекенд буде слухати на іншому порту / шляху – міняєте тут
+    // ⚠️ Якщо ти запускаєш не на localhost, зміни IP тут
     private static final String WS_URL = "ws://localhost:8080/ws/websocket";
-    private static final String DESTINATION = "/topic/notifications";
+    private static final String TOPIC = "/topic/notifications";
 
     private final Consumer<String> onNotification;
     private WebSocket webSocket;
-    private final StringBuilder buffer = new StringBuilder();
 
     public WebSocketNotificationsClient(Consumer<String> onNotification) {
         this.onNotification = onNotification;
@@ -29,126 +24,54 @@ public class WebSocketNotificationsClient implements WebSocket.Listener {
     public void connect() {
         try {
             HttpClient client = HttpClient.newHttpClient();
-
             client.newWebSocketBuilder()
                     .buildAsync(URI.create(WS_URL), this)
-                    .whenComplete((ws, error) -> {
-                        if (error != null) {
-                            System.err.println("WebSocket connection failed: " + error.getMessage());
-                        } else {
-                            this.webSocket = ws;
-                            // як тільки підключилися, відправляємо STOMP CONNECT + SUBSCRIBE
-                            sendConnectFrame();
-                            sendSubscribeFrame();
-                        }
-                    });
-
+                    .join(); // Чекаємо підключення
         } catch (Exception e) {
-            System.err.println("Cannot connect to WebSocket: " + e.getMessage());
+            System.err.println("WebSocket connect failed: " + e.getMessage());
         }
     }
-
-    public void disconnect() {
-        if (webSocket != null) {
-            webSocket.sendClose(WebSocket.NORMAL_CLOSURE, "bye");
-        }
-    }
-
-    // ---- STOMP helper methods ----
-
-    private void sendConnectFrame() {
-        String frame =
-                "CONNECT\n" +
-                        "accept-version:1.1,1.2\n" +
-                        "host:localhost\n" +
-                        "heart-beat:0,0\n\n" +
-                        "\0";
-        sendFrame(frame);
-    }
-
-    private void sendSubscribeFrame() {
-        String frame =
-                "SUBSCRIBE\n" +
-                        "id:sub-0\n" +
-                        "destination:" + DESTINATION + "\n\n" +
-                        "\0";
-        sendFrame(frame);
-    }
-
-    private void sendFrame(String frame) {
-        if (webSocket != null) {
-            webSocket.sendText(frame, true);
-        }
-    }
-
-    // ---- WebSocket.Listener implementation ----
 
     @Override
     public void onOpen(WebSocket webSocket) {
-        System.out.println("WebSocket opened");
+        this.webSocket = webSocket;
+        System.out.println(">>> WS Connected. Sending STOMP CONNECT...");
+
+        // 1. Відправляємо STOMP CONNECT фрейм при відкритті
+        String connectFrame = "CONNECT\naccept-version:1.1,1.0\nheart-beat:10000,10000\n\n\u0000";
+        webSocket.sendText(connectFrame, true);
         webSocket.request(1);
     }
 
     @Override
-    public CompletionStage<?> onText(WebSocket webSocket,
-                                     CharSequence data,
-                                     boolean last) {
-        buffer.append(data);
-        if (last) {
-            String text = buffer.toString();
-            buffer.setLength(0);
-            processFrames(text);
-        }
-        webSocket.request(1);
-        return CompletableFuture.completedFuture(null);
-    }
+    public CompletionStage<?> onText(WebSocket webSocket, CharSequence data, boolean last) {
+        String message = data.toString();
 
-    private void processFrames(String text) {
-        // STOMP фрейми розділяються символом \0
-        String[] frames = text.split("\0");
-        for (String frame : frames) {
-            frame = frame.trim();
-            if (frame.isEmpty()) continue;
+        if (message.startsWith("CONNECTED")) {
+            System.out.println(">>> STOMP Handshake success. Subscribing to " + TOPIC);
 
-            // цікавлять тільки MESSAGE-фрейми
-            if (frame.startsWith("MESSAGE")) {
-                int idx = frame.indexOf("\n\n");
-                String body = (idx >= 0) ? frame.substring(idx + 2) : frame;
-                String msg = body.trim();
+            // 2. ТІЛЬКИ ТУТ, коли сервер відповів "ОК", ми підписуємось
+            String id = "sub-0";
+            String subscribeFrame = "SUBSCRIBE\nid:" + id + "\ndestination:" + TOPIC + "\n\n\u0000";
+            webSocket.sendText(subscribeFrame, true);
 
-                if (!msg.isEmpty() && onNotification != null) {
-                    onNotification.accept(msg);
+        } else if (message.startsWith("MESSAGE")) {
+            // 3. Це повідомлення!
+            int bodyStart = message.indexOf("\n\n");
+            if (bodyStart != -1) {
+                String body = message.substring(bodyStart + 2).replace("\u0000", "").trim();
+                if (!body.isEmpty() && onNotification != null) {
+                    onNotification.accept(body);
                 }
-            } else if (frame.startsWith("CONNECTED")) {
-                System.out.println("STOMP connected");
-            } else if (frame.startsWith("ERROR")) {
-                System.err.println("STOMP error frame: " + frame);
-            } else {
-                // інші фрейми можна просто залогувати
-                System.out.println("STOMP frame: " + frame);
             }
         }
+
+        webSocket.request(1);
+        return null;
     }
 
     @Override
     public void onError(WebSocket webSocket, Throwable error) {
-        System.err.println("WebSocket error: " + error.getMessage());
-    }
-
-    @Override
-    public CompletionStage<?> onBinary(WebSocket webSocket,
-                                       java.nio.ByteBuffer data,
-                                       boolean last) {
-        // нам не треба, працюємо тільки з текстом
-        webSocket.request(1);
-        return CompletableFuture.completedFuture(null);
-    }
-
-    @Override
-    public CompletionStage<?> onClose(WebSocket webSocket,
-                                      int statusCode,
-                                      String reason) {
-        System.out.println("WebSocket closed: " + statusCode + " " + reason);
-        return CompletableFuture.completedFuture(null);
+        System.err.println("WebSocket Error: " + error.getMessage());
     }
 }

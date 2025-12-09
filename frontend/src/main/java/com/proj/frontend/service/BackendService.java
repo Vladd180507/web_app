@@ -30,4 +30,7 @@ public interface BackendService {
     boolean removeMemberFromGroup(long groupId, long userId) throws Exception;
 
     List<Resource> getAllResources() throws Exception;
+
+    void connectWebSocket();
+    void disconnectWebSocket();
 }
