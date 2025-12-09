@@ -10,6 +10,8 @@ import com.proj.backend.repository.MembershipRepository;
 import com.proj.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
 @Service
@@ -20,8 +22,18 @@ public class MembershipService {
     private final GroupRepository groupRepository;
     private final UserRepository userRepository;
 
-    // Добавить пользователя в группу
-    public MemberDto joinGroup(Long groupId, Long userId) {
+    // ✅ ДОДАНО: Ін'єкція сервісу логування
+    private final ActivityLogService activityLogService;
+
+    public List<MemberDto> getMembers(Long groupId) {
+        return membershipRepository.findByGroupGroupId(groupId)
+                .stream()
+                .map(MemberDto::fromEntity)
+                .toList();
+    }
+
+    @Transactional
+    public MemberDto joinGroupById(Long groupId, Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -38,44 +50,28 @@ public class MembershipService {
                 .role(MembershipRole.MEMBER)
                 .build();
 
-        return MemberDto.fromEntity(membershipRepository.save(membership));
+        Membership saved = membershipRepository.save(membership);
+
+        // ✅ ДОДАНО: Логування вступу
+        activityLogService.logActivity(
+                userId,
+                "GROUP_JOIN",
+                "Користувач " + user.getName() + " приєднався до групи: " + group.getName()
+        );
+
+        return MemberDto.fromEntity(saved);
     }
 
-    // Получить всех участников группы
-    public List<MemberDto> getMembers(Long groupId) {
-        return membershipRepository.findByGroupGroupId(groupId)
-                .stream()
-                .map(MemberDto::fromEntity)
-                .toList();
-    }
-
-    public MemberDto joinGroupById(Long groupId, Long userId) {
-        Group group = groupRepository.findById(groupId)
-                .orElseThrow(() -> new RuntimeException("Group not found"));
-
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        if (membershipRepository.existsByUserUserIdAndGroupGroupId(user.getUserId(), groupId)) {
-            throw new RuntimeException("User is already in this group");
-        }
-
-        Membership membership = Membership.builder()
-                .user(user)
-                .group(group)
-                .role(MembershipRole.MEMBER)
-                .build();
-
-        return MemberDto.fromEntity(membershipRepository.save(membership));
-    }
-
+    @Transactional
     public void leaveGroupById(Long groupId, Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         Membership membership = membershipRepository
-                .findByUserUserIdAndGroupGroupId(user.getUserId(), groupId)
+                .findByUserUserIdAndGroupGroupId(userId, groupId)
                 .orElseThrow(() -> new RuntimeException("User is not in this group"));
+
+        String groupName = membership.getGroup().getName(); // Зберігаємо назву для логу
 
         if (membership.getRole() == MembershipRole.ADMIN &&
                 membershipRepository.findByGroupGroupId(groupId).size() == 1) {
@@ -83,15 +79,12 @@ public class MembershipService {
         }
 
         membershipRepository.delete(membership);
-    }
 
-
-    // Выйти из группы / удалить пользователя
-    public void leaveGroup(Long groupId, Long userId) {
-        Membership membership = membershipRepository
-                .findByUserUserIdAndGroupGroupId(userId, groupId)
-                .orElseThrow(() -> new RuntimeException("User is not in the group"));
-
-        membershipRepository.delete(membership);
+        // ✅ ДОДАНО: Логування виходу
+        activityLogService.logActivity(
+                userId,
+                "GROUP_LEAVE",
+                "Користувач покинув групу: " + groupName
+        );
     }
 }

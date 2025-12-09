@@ -32,39 +32,43 @@ public class TaskService {
                 .toList();
     }
 
-    // ================================
-    // CREATE TASK
-    // ================================
+    // ================================\
+    // CREATE TASK\
+    // ================================\
+    // Змінено creatorName -> creatorEmail для надійності
     public TaskDto createTask(Long groupId, String title, String description,
-                              String deadlineIso, String creatorName) {
+                              String deadlineIso, String creatorEmail) {
 
         Group group = groupRepository.findById(groupId)
                 .orElseThrow(() -> new RuntimeException("Group not found"));
 
-        User creator = userRepository.findByName(creatorName)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        // ✅ ВИПРАВЛЕНО: Шукаємо по Email, а не по імені
+        User creator = userRepository.findByEmail(creatorEmail)
+                .orElseThrow(() -> new RuntimeException("User not found: " + creatorEmail));
 
         Task task = Task.builder()
                 .group(group)
                 .createdBy(creator)
                 .title(title)
                 .description(description)
-                .deadline(deadlineIso != null ? LocalDateTime.parse(deadlineIso) : null)
+                .status(TaskStatus.OPEN)
+                .deadline(LocalDateTime.parse(deadlineIso))
+                .createdAt(LocalDateTime.now())
                 .build();
 
         Task savedTask = taskRepository.save(task);
-        TaskDto taskDto = TaskDto.fromEntity(savedTask);
 
-        // 🔥 ОТПРАВЛЯЕМ УВЕДОМЛЕНИЕ 🔥
-        // Все, кто подписан на /topic/group/1/tasks, получат этот объект моментально
-        messagingTemplate.convertAndSend("/topic/group/" + groupId + "/tasks", taskDto);
-
+        // ✅ Логування
         activityLogService.logActivity(
                 creator.getUserId(),
                 "TASK_CREATED",
-                "Создана задача: " + title + " в группе " + group.getName()
+                "Створено завдання: " + title + " у групі " + group.getName()
         );
-        return taskDto;
+
+        // WebSocket повідомлення (якщо використовуєш)
+        // messagingTemplate.convertAndSend("/topic/group/" + groupId, "New Task: " + title);
+
+        return TaskDto.fromEntity(savedTask);
     }
 
     // ================================

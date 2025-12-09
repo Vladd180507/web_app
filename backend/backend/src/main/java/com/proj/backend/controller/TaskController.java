@@ -2,20 +2,20 @@ package com.proj.backend.controller;
 
 import com.proj.backend.dto.TaskDto;
 import com.proj.backend.model.TaskStatus;
-import com.proj.backend.model.User;
-import com.proj.backend.repository.UserRepository;
 import com.proj.backend.service.TaskService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/tasks")
 @RequiredArgsConstructor
 public class TaskController {
-    private final UserRepository userRepository;
+
+    // UserRepository тут більше не потрібен, сервіс сам знайде юзера
     private final TaskService taskService;
 
     // ================================
@@ -33,25 +33,23 @@ public class TaskController {
     public ResponseEntity<TaskDto> createTask(
             @PathVariable Long groupId,
             @RequestBody CreateTaskRequest req,
-            java.security.Principal principal // <--- 1. Добавляем этот параметр
+            Principal principal // <--- 1. Отримуємо Principal (Spring Security)
     ) {
-        // 2. Имя пользователя (email) берем из токена, который проверил Spring Security
-        String emailFromToken = principal.getName();
+        // 2. Витягуємо email з токена (JWT Subject = Email)
+        String creatorEmail = principal.getName();
 
-        // 3. Ищем юзера по email из токена, а не по creatorName из JSON
-
-        User creator = userRepository.findByEmail(emailFromToken)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
+        // 3. Передаємо EMAIL у сервіс.
+        // Сервіс сам знайде юзера в БД і запише лог.
         TaskDto created = taskService.createTask(
                 groupId,
                 req.title(),
                 req.description(),
                 req.deadline(),
-                creator.getName() // Передаем уже проверенное имя
+                creatorEmail // <--- ВАЖЛИВО: Передаємо email, а не ім'я!
         );
         return ResponseEntity.ok(created);
     }
+
     // ================================
     // GET TASK BY ID
     // ================================
@@ -61,7 +59,7 @@ public class TaskController {
     }
 
     // ================================
-    // UPDATE TASK (title, description, deadline)
+    // UPDATE TASK
     // ================================
     @PutMapping("/{taskId}")
     public ResponseEntity<TaskDto> updateTask(
@@ -98,13 +96,13 @@ public class TaskController {
     }
 
     // ================================
-    // RECORDS (DTO for controller)
+    // DTOs
     // ================================
     public record CreateTaskRequest(
             String title,
             String description,
-            String deadline,   // ISO format "2025-12-01T20:15:30"
-            String creatorName
+            String deadline,
+            String creatorName // Це поле з JSON ігноруємо, беремо з токена
     ) {}
 
     public record UpdateTaskRequest(

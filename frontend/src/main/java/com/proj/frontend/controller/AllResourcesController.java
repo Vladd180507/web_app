@@ -66,7 +66,7 @@ public class AllResourcesController {
             Scene scene = new Scene(loader.load(), 1150, 700);
 
             scene.getStylesheets().add(
-                    App.class.getResource("/css/main_menu.css").toExternalForm()
+                    App.class.getResource("/css/mai n_menu.css").toExternalForm()
             );
 
             MainMenuController controller = loader.getController();
