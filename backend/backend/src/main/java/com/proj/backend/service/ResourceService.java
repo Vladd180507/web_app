@@ -120,4 +120,11 @@ public class ResourceService {
                 .uploadedAt(resource.getUploadedAt())
                 .build();
     }
+
+    public List<ResourceDTO> getAllResources() {
+        return resourceRepository.findAll()
+                .stream()
+                .map(this::convertToDTO) // Використовуємо твій існуючий метод конвертації
+                .toList();
+    }
 }

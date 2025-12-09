@@ -132,19 +132,21 @@ public class ApiBackendService implements BackendService {
         body.put("name", newName);
         body.put("email", newEmail);
 
-        HttpRequest request = authenticatedRequestBuilder(BASE_URL + "/users/" + currentUser.getId())
+        // Надсилаємо PUT запит на /api/users/profile
+        HttpRequest request = authenticatedRequestBuilder(BASE_URL + "/users/profile")
                 .PUT(HttpRequest.BodyPublishers.ofString(gson.toJson(body)))
                 .build();
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
         if (response.statusCode() == 200) {
-            // Теж ручний парсинг для надійності
-            JsonObject json = JsonParser.parseString(response.body()).getAsJsonObject();
-            this.currentUser.setName(json.get("name").getAsString());
-            this.currentUser.setEmail(json.get("email").getAsString());
-            return this.currentUser;
+            // Сервер повертає оновленого юзера -> оновлюємо його у нас
+            User updatedUser = gson.fromJson(response.body(), User.class);
+            this.currentUser = updatedUser; // ⚠️ ВАЖЛИВО: Оновлюємо кеш
+            return updatedUser;
+        } else {
+            throw new Exception("Failed to update profile: " + response.body());
         }
-        return currentUser;
     }
 
     // ================= GROUPS =================
@@ -365,7 +367,26 @@ public class ApiBackendService implements BackendService {
 
     @Override
     public List<Resource> getAllResources() throws Exception {
-        // Цей метод можна залишити пустим або реалізувати пошук по всіх групах, якщо треба
+        System.out.println(">>> Sending request: GET " + BASE_URL + "/resources/all");
+
+        HttpRequest request = authenticatedRequestBuilder(BASE_URL + "/resources/all")
+                .GET()
+                .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        System.out.println("<<< Server response: " + response.statusCode());
+        System.out.println("<<< Response body: " + response.body());
+
+        if (response.statusCode() == 200) {
+            // Перевіримо, чи Gson взагалі щось розпарсив
+            List<Resource> list = gson.fromJson(response.body(), new TypeToken<List<Resource>>(){}.getType());
+            System.out.println("<<< Parsed objects: " + (list != null ? list.size() : "null"));
+            return list;
+        } else {
+            System.err.println("!!! ERROR: Server returned code " + response.statusCode());
+        }
+
         return Collections.emptyList();
     }
 

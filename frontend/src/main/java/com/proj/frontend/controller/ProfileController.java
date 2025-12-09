@@ -40,26 +40,21 @@ public class ProfileController {
         String newName = nameField.getText().trim();
         String newEmail = emailField.getText().trim();
 
-        // 1. Валідація: поля не мають бути порожніми
         if (newName.isEmpty() || newEmail.isEmpty()) {
-            showError("Name and email cannot be empty.");
+            showError("Fields cannot be empty");
             return;
         }
 
-        // 2. Виконуємо запит у фоновому потоці
         new Thread(() -> {
             try {
-                // Відправляємо дані на сервер
+                // 1. Відправляємо запит на сервер
                 User updatedUser = backendService.updateUserProfile(newName, newEmail);
 
-                // 3. Оновлюємо інтерфейс у головному потоці
                 Platform.runLater(() -> {
-                    // Оновлюємо локальний об'єкт
-                    this.currentUser.setName(updatedUser.getName());
-                    this.currentUser.setEmail(updatedUser.getEmail());
-                    this.currentUser.setId(updatedUser.getId()); // на випадок змін
+                    // 2. Оновлюємо поточного юзера в цьому контролері
+                    this.currentUser = updatedUser;
 
-                    // Показуємо успіх
+                    // 3. Показуємо повідомлення про успіх
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setTitle("Success");
                     alert.setHeaderText(null);
@@ -69,7 +64,7 @@ public class ProfileController {
 
             } catch (Exception e) {
                 e.printStackTrace();
-                Platform.runLater(() -> showError("Failed to update profile: " + e.getMessage()));
+                Platform.runLater(() -> showError("Error: " + e.getMessage()));
             }
         }).start();
     }
@@ -82,8 +77,8 @@ public class ProfileController {
             Scene scene = new Scene(loader.load(), 1150, 700);
 
             // Підключаємо стилі (перевір, чи шлях правильний у твоєму проєкті)
-            if (getClass().getResource("/css/application.css") != null) {
-                scene.getStylesheets().add(getClass().getResource("/css/application.css").toExternalForm());
+            if (getClass().getResource("/css/main_menu.css") != null) {
+                scene.getStylesheets().add(getClass().getResource("/css/main_menu.css").toExternalForm());
             }
 
             // Передаємо дані назад у контролер меню

@@ -21,7 +21,7 @@
 
                 <!-- Верхній рядок: Back + заголовок -->
                 <HBox spacing="10" alignment="CENTER_LEFT" maxWidth="900">
-                    <Button text="Back to dashboard"
+                    <Button text="Back"
                             onAction="#handleBack"
                             styleClass="secondary-button"/>
 

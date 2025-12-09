@@ -71,4 +71,9 @@ public class ResourceController {
         return ResponseEntity.ok(result);
     }
 
+    // ✅ Endpoint для отримання всіх ресурсів
+    @GetMapping("/all")
+    public ResponseEntity<List<ResourceDTO>> getAllResources() {
+        return ResponseEntity.ok(resourceService.getAllResources());
+    }
 }

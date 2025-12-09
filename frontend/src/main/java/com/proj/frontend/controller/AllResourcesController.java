@@ -47,6 +47,8 @@ public class AllResourcesController {
     private void setupTable() {
         groupColumn.setCellValueFactory(new PropertyValueFactory<>("groupId"));
         titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
+
+        // ✅ Має бути "url", бо в моделі Resource є поле "url" з анотацією @SerializedName
         urlColumn.setCellValueFactory(new PropertyValueFactory<>("url"));
     }
 
@@ -66,7 +68,7 @@ public class AllResourcesController {
             Scene scene = new Scene(loader.load(), 1150, 700);
 
             scene.getStylesheets().add(
-                    App.class.getResource("/css/mai n_menu.css").toExternalForm()
+                    App.class.getResource("/css/main_menu.css").toExternalForm()
             );
 
             MainMenuController controller = loader.getController();

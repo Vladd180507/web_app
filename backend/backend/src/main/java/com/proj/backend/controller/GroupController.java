@@ -56,17 +56,27 @@ public class GroupController {
     @PutMapping("/{id}")
     public ResponseEntity<GroupDto> update(
             @PathVariable Long id,
-            @RequestBody Map<String, String> request) {
+            @RequestBody Map<String, String> request,
+            java.security.Principal principal // <--- Додаємо Principal
+    ) {
         String name = request.get("name");
         String description = request.get("description");
+        String email = principal.getName(); // <--- Беремо email
 
-        GroupDto updated = groupService.updateGroup(id, name, description);
+        // Передаємо email у сервіс
+        GroupDto updated = groupService.updateGroup(id, name, description, email);
         return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        groupService.deleteGroup(id);
+    public ResponseEntity<Void> delete(
+            @PathVariable Long id,
+            java.security.Principal principal // <--- Додаємо Principal
+    ) {
+        String email = principal.getName(); // <--- Беремо email
+
+        // Передаємо email у сервіс
+        groupService.deleteGroup(id, email);
         return ResponseEntity.noContent().build();
     }
 }

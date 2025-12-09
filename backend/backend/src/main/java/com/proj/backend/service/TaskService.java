@@ -83,40 +83,74 @@ public class TaskService {
     // ================================
     // UPDATE TASK (title, desc, deadline)
     // ================================
-    public TaskDto updateTask(
-            Long taskId,
-            String newTitle,
-            String newDescription,
-            String newDeadlineIso
-    ) {
+    public TaskDto updateTask(Long taskId, String newTitle, String newDescription, String newDeadlineIso, String editorEmail) {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new RuntimeException("Task not found"));
+
+        User editor = userRepository.findByEmail(editorEmail)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
         if (newTitle != null) task.setTitle(newTitle);
         if (newDescription != null) task.setDescription(newDescription);
         if (newDeadlineIso != null) task.setDeadline(LocalDateTime.parse(newDeadlineIso));
 
-        return TaskDto.fromEntity(taskRepository.save(task));
+        Task savedTask = taskRepository.save(task);
+
+        // LOG
+        activityLogService.logActivity(
+                editor.getUserId(),
+                "TASK_UPDATED",
+                "Updated task: " + savedTask.getTitle()
+        );
+
+        return TaskDto.fromEntity(savedTask);
     }
 
     // ================================
     // UPDATE STATUS
     // ================================
-    public TaskDto updateStatus(Long taskId, TaskStatus newStatus) {
+    public TaskDto updateStatus(Long taskId, TaskStatus newStatus, String editorEmail) {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new RuntimeException("Task not found"));
 
+        User editor = userRepository.findByEmail(editorEmail)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        TaskStatus oldStatus = task.getStatus();
         task.setStatus(newStatus);
-        return TaskDto.fromEntity(taskRepository.save(task));
+
+        Task savedTask = taskRepository.save(task);
+
+        // LOG
+        activityLogService.logActivity(
+                editor.getUserId(),
+                "TASK_STATUS_CHANGED",
+                "Task '" + task.getTitle() + "' changed from " + oldStatus + " to " + newStatus
+        );
+
+        return TaskDto.fromEntity(savedTask);
     }
 
     // ================================
     // DELETE TASK
     // ================================
-    public void deleteTask(Long taskId) {
-        if (!taskRepository.existsById(taskId)) {
-            throw new RuntimeException("Task not found");
-        }
-        taskRepository.deleteById(taskId);
+    public void deleteTask(Long taskId, String editorEmail) {
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new RuntimeException("Task not found"));
+
+        User editor = userRepository.findByEmail(editorEmail)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        String title = task.getTitle();
+        String groupName = task.getGroup().getName();
+
+        taskRepository.delete(task);
+
+        // LOG
+        activityLogService.logActivity(
+                editor.getUserId(),
+                "TASK_DELETED",
+                "Deleted task: " + title + " from group " + groupName
+        );
     }
 }

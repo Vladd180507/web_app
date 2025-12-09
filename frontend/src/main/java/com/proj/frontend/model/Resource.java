@@ -1,10 +1,18 @@
 package com.proj.frontend.model;
 
+import com.google.gson.annotations.SerializedName;
+
 public class Resource {
+
+    // 👇 ДОДАЙ ЦЮ АНОТАЦІЮ
+    @SerializedName("resourceId")
     private Long id;
+
     private Long groupId;
     private String title;
     private String type;
+
+    @SerializedName("pathOrUrl")
     private String url;
 
     public Resource() {}
@@ -25,35 +33,13 @@ public class Resource {
         this.id = id;
     }
 
-    public Long getGroupId() {
-        return groupId;
-    }
-
-    public void setGroupId(Long groupId) {
-        this.groupId = groupId;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
+    // ... інші геттери і сеттери
+    public Long getGroupId() { return groupId; }
+    public void setGroupId(Long groupId) { this.groupId = groupId; }
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
+    public String getType() { return type; }
+    public void setType(String type) { this.type = type; }
+    public String getUrl() { return url; }
+    public void setUrl(String url) { this.url = url; }
 }

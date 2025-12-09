@@ -12,9 +12,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
+import java.security.Principal;
 import java.util.Map;
-import com.proj.backend.model.User;
 
 @RestController
 @RequestMapping("/api/users")
@@ -24,36 +23,22 @@ public class UserController {
     private final JwtCore jwtCore;
     private final UserService userService;
 
-    // ✅ ЛОГИН - POST /api/users/login
+    // ✅ ЛОГИН
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> request) {
         String email = request.get("email");
         String password = request.get("password");
 
-        System.out.println(">>> ATTEMPTING LOGIN FOR: " + email);
-        System.out.println(">>> PASSWORD LENGTH: " + (password != null ? password.length() : "null"));
-
         try {
-            // 1. Спроба аутентифікації (тут перевіряється хеш пароля)
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(email, password)
             );
-
-            // 2. Якщо все ок - встановлюємо контекст
             SecurityContextHolder.getContext().setAuthentication(authentication);
-
-            // 3. Генеруємо токен
             String jwt = jwtCore.generateToken(authentication);
-
-            System.out.println(">>> LOGIN SUCCESS! Token generated.");
             return ResponseEntity.ok(jwt);
-
         } catch (BadCredentialsException e) {
-            System.err.println("!!! BAD CREDENTIALS ERROR: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Невірний логін або пароль");
         } catch (Exception e) {
-            System.err.println("!!! LOGIN ERROR: " + e.getClass().getName() + " -> " + e.getMessage());
-            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Помилка сервера: " + e.getMessage());
         }
     }
@@ -73,13 +58,38 @@ public class UserController {
         }
     }
 
-    // ... (інші методи залиш без змін або видали, якщо вони не використовуються для тесту)
-
-    // ✅ ОТРИМАТИ ПОЛЬЗОВАТЕЛЯ ПО EMAIL
+    // ✅ ОТРИМАТИ КОРИСТУВАЧА ПО EMAIL
     @GetMapping("/email/{email}")
     public ResponseEntity<UserDto> getUserByEmail(@PathVariable String email) {
         return userService.getUserByEmail(email)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    // =========================================================================
+    // 👇 ОСЬ ТУТ БУЛА ПОМИЛКА. ОСЬ ПРАВИЛЬНИЙ КОД ДЛЯ БЕКЕНДУ:
+    // =========================================================================
+
+    // ✅ ОНОВЛЕННЯ ПРОФІЛЮ (Endpoint)
+    @PutMapping("/profile")
+    public ResponseEntity<UserDto> updateProfile(
+            @RequestBody Map<String, String> request,
+            Principal principal // <--- Хто стукає? (з токена)
+    ) {
+        // 1. Отримуємо email поточного юзера з токена
+        String currentEmail = principal.getName();
+
+        // 2. Знаходимо його в базі
+        UserDto currentUser = userService.getUserByEmail(currentEmail)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // 3. Беремо нові дані
+        String newName = request.get("name");
+        String newEmail = request.get("email");
+
+        // 4. Оновлюємо
+        UserDto updatedUser = userService.updateUser(currentUser.getUserId(), newName, newEmail);
+
+        return ResponseEntity.ok(updatedUser);
     }
 }

@@ -1,13 +1,13 @@
 package com.proj.backend.service;
 
-import com.proj.backend.model.MembershipRole;
-import com.proj.backend.model.Membership;
 import com.proj.backend.dto.GroupDto;
 import com.proj.backend.model.Group;
+import com.proj.backend.model.Membership;
+import com.proj.backend.model.MembershipRole;
 import com.proj.backend.model.User;
 import com.proj.backend.repository.GroupRepository;
-import com.proj.backend.repository.UserRepository;
 import com.proj.backend.repository.MembershipRepository;
+import com.proj.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +23,7 @@ public class GroupService {
     private final GroupRepository groupRepository;
     private final UserRepository userRepository;
     private final MembershipRepository membershipRepository;
+    private final com.proj.backend.repository.ResourceRepository resourceRepository;
 
     public List<GroupDto> getAllGroups() {
         return groupRepository.findAll()
@@ -37,57 +38,87 @@ public class GroupService {
                 .orElseThrow(() -> new RuntimeException("Group not found"));
     }
 
-    @Transactional  // ✅ Добавь транзакцию
-    public GroupDto createGroup(String name, String description, Long creatorId) {  // ✅ Изменил на Long creatorId
-        // ✅ Ищем по ID
+    @Transactional
+    public GroupDto createGroup(String name, String description, Long creatorId) {
         User creator = userRepository.findById(creatorId)
-                .orElseThrow(() -> new RuntimeException("User not found with ID: " + creatorId));
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
         Group group = Group.builder()
                 .name(name)
                 .description(description)
                 .createdBy(creator)
-                .createdAt(LocalDateTime.now())  // ✅ Добавь created_at
+                .createdAt(LocalDateTime.now())
                 .build();
 
         Group savedGroup = groupRepository.save(group);
 
-        // Автоматически делаем создателя ADMIN
         Membership adminMembership = Membership.builder()
                 .user(creator)
                 .group(savedGroup)
                 .role(MembershipRole.ADMIN)
-                .joinedAt(LocalDateTime.now())  // ✅ Добавь joined_at
+                .joinedAt(LocalDateTime.now())
                 .build();
+        membershipRepository.save(adminMembership);
 
+        // LOG
         activityLogService.logActivity(
                 creator.getUserId(),
                 "GROUP_CREATED",
-                "Создана новая группа: " + name
+                "Created group: " + name
         );
 
-        membershipRepository.save(adminMembership);
-
-        return GroupDto.fromEntity(savedGroup);  // ✅ Возвращаем savedGroup, а не group
+        return GroupDto.fromEntity(savedGroup);
     }
 
+    // ✅ ОНОВЛЕННЯ ГРУПИ (+ ЛОГ)
     @Transactional
-    public GroupDto updateGroup(Long id, String name, String description) {
+    public GroupDto updateGroup(Long id, String name, String description, String editorEmail) {
         Group group = groupRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Group not found"));
 
+        User editor = userRepository.findByEmail(editorEmail)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        String oldName = group.getName();
         group.setName(name);
         group.setDescription(description);
 
         Group updated = groupRepository.save(group);
+
+        // LOG
+        activityLogService.logActivity(
+                editor.getUserId(),
+                "GROUP_UPDATED",
+                "Updated group details. Old name: " + oldName + ", New name: " + name
+        );
+
         return GroupDto.fromEntity(updated);
     }
 
     @Transactional
-    public void deleteGroup(Long id) {
-        if (!groupRepository.existsById(id)) {
-            throw new RuntimeException("Group not found");
-        }
-        groupRepository.deleteById(id);
+    public void deleteGroup(Long id, String editorEmail) {
+        Group group = groupRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Group not found"));
+
+        User editor = userRepository.findByEmail(editorEmail)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        String groupName = group.getName();
+
+        // 👇 2. ВАЖЛИВО: Спочатку видаляємо всі ресурси цієї групи!
+        // (Припускаємо, що у ResourceRepository є метод deleteByGroupGroupId або ми дістаємо і видаляємо)
+        var resources = resourceRepository.findByGroupId(id);
+        resourceRepository.deleteAll(resources);
+
+        // Також видаляємо учасників (якщо каскад не налаштований)
+        // membershipRepository.deleteByGroupGroupId(id); // якщо треба
+
+        groupRepository.delete(group);
+
+        activityLogService.logActivity(
+                editor.getUserId(),
+                "GROUP_DELETED",
+                "Deleted group: " + groupName
+        );
     }
 }

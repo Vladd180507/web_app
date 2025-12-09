@@ -77,8 +77,8 @@ public class ActivityLogController {
             Scene scene = new Scene(loader.load(), 1150, 700);
 
             // Якщо є CSS, додаємо його
-            String css = getClass().getResource("/css/application.css") != null
-                    ? getClass().getResource("/css/application.css").toExternalForm()
+            String css = getClass().getResource("/css/main_menu.css") != null
+                    ? getClass().getResource("/css/main_menu.css").toExternalForm()
                     : null;
             if (css != null) scene.getStylesheets().add(css);
 

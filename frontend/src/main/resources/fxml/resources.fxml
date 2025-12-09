@@ -14,10 +14,10 @@
             <!-- Темна картка по центру -->
             <VBox styleClass="app-card"
                   spacing="20"
-                  maxWidth="950"
-                  prefWidth="950"
-                  maxHeight="580"
-                  prefHeight="580">
+                  maxWidth="900"
+                  prefWidth="900"
+                  maxHeight="600"
+                  prefHeight="600">
 
                 <!-- Верхній бар: Back + назва групи -->
                 <HBox spacing="10" alignment="CENTER_LEFT" maxWidth="900">
@@ -54,7 +54,7 @@
 
                     <TextField fx:id="urlField"
                                promptText="URL"
-                               prefWidth="260"
+                               prefWidth="350"
                                styleClass="input-field"/>
 
                     <Region HBox.hgrow="ALWAYS"/>

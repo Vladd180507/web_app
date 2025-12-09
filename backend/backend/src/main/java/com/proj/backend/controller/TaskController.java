@@ -60,38 +60,42 @@ public class TaskController {
 
     // ================================
     // UPDATE TASK
-    // ================================
     @PutMapping("/{taskId}")
     public ResponseEntity<TaskDto> updateTask(
             @PathVariable Long taskId,
-            @RequestBody UpdateTaskRequest req
+            @RequestBody UpdateTaskRequest req,
+            java.security.Principal principal // <---
     ) {
+        String email = principal.getName();
         TaskDto updated = taskService.updateTask(
                 taskId,
                 req.title(),
                 req.description(),
-                req.deadline()
+                req.deadline(),
+                email // <--- Передаємо email
         );
         return ResponseEntity.ok(updated);
     }
 
-    // ================================
     // UPDATE STATUS
-    // ================================
     @PatchMapping("/{taskId}/status")
     public ResponseEntity<TaskDto> updateTaskStatus(
             @PathVariable Long taskId,
-            @RequestBody UpdateStatusRequest req
+            @RequestBody UpdateStatusRequest req,
+            java.security.Principal principal // <---
     ) {
-        return ResponseEntity.ok(taskService.updateStatus(taskId, req.status()));
+        String email = principal.getName();
+        return ResponseEntity.ok(taskService.updateStatus(taskId, req.status(), email));
     }
 
-    // ================================
     // DELETE TASK
-    // ================================
     @DeleteMapping("/{taskId}")
-    public ResponseEntity<Void> deleteTask(@PathVariable Long taskId) {
-        taskService.deleteTask(taskId);
+    public ResponseEntity<Void> deleteTask(
+            @PathVariable Long taskId,
+            java.security.Principal principal // <---
+    ) {
+        String email = principal.getName();
+        taskService.deleteTask(taskId, email);
         return ResponseEntity.noContent().build();
     }
 
