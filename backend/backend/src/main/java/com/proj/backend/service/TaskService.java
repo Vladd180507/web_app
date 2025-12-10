@@ -65,7 +65,7 @@ public class TaskService {
 
         // ✅ ВИПРАВЛЕНО СПОВІЩЕННЯ: Відправляємо DTO, а не просто текст
         try {
-            String msg = "Нове завдання в групі " + group.getName() + ": " + title;
+            String msg = "New task in group " + group.getName() + ": " + title;
 
             NotificationDto notification = new NotificationDto(
                     msg,

@@ -56,7 +56,7 @@ public class ResourceService {
 
         // ✅ ВИПРАВЛЕНО СПОВІЩЕННЯ: Відправляємо NotificationDto
         try {
-            String msg = "Новий матеріал у групі " + group.getName() + ": " + dto.getTitle();
+            String msg = "New resource in group " + group.getName() + ": " + dto.getTitle();
 
             NotificationDto notification = new NotificationDto(
                     msg,

@@ -60,12 +60,12 @@ public class MembershipService {
                 userId,
                 group.getGroupId(), // ID групи
                 "GROUP_JOIN",
-                "Користувач " + user.getName() + " приєднався до групи: " + group.getName()
+                "User " + user.getName() + " joined group: " + group.getName()
         );
 
         // ✅ ВИПРАВЛЕНО СПОВІЩЕННЯ: Відправляємо NotificationDto
         try {
-            String msg = "Користувач " + user.getName() + " приєднався до групи " + group.getName() + "!";
+            String msg = "User " + user.getName() + " joined group " + group.getName() + "!";
 
             NotificationDto notification = new NotificationDto(
                     msg,
@@ -104,7 +104,7 @@ public class MembershipService {
                 userId,
                 groupId, // ID групи
                 "GROUP_LEAVE",
-                "Користувач покинув групу: " + groupName
+                "User " + user.getName() + " left group: " + groupName
         );
     }
 }
