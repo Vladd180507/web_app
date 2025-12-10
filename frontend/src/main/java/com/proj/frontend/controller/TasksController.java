@@ -116,32 +116,52 @@ public class TasksController {
     }
 
     private void updateDeadlineSummary(List<Task> tasks) {
-        int overdue = 0;
-        int dueToday = 0;
+        if (tasks == null || tasks.isEmpty()) {
+            deadlineSummaryLabel.setText("No tasks yet.");
+            return;
+        }
 
         LocalDate today = LocalDate.now();
+        long overdueCount = 0;
+        long upcomingCount = 0;
 
         for (Task t : tasks) {
-            String dl = t.getDeadline();
-            if (dl == null || dl.isBlank()) continue;
+            // Пропускаємо, якщо дедлайну немає
+            if (t.getDeadline() == null || t.getDeadline().isBlank()) {
+                continue;
+            }
 
+            LocalDate deadline = null;
             try {
-                LocalDate d = LocalDate.parse(dl);
-                if (d.isBefore(today)) {
-                    overdue++;
-                } else if (d.isEqual(today)) {
-                    dueToday++;
+                // ✅ ВИПРАВЛЕННЯ: Обробка формату з часом (ISO-8601, наприклад "2023-12-01T14:00:00")
+                if (t.getDeadline().contains("T")) {
+                    deadline = java.time.LocalDateTime.parse(t.getDeadline()).toLocalDate();
+                } else {
+                    // Звичайний формат дати ("2023-12-01")
+                    deadline = LocalDate.parse(t.getDeadline());
                 }
-            } catch (Exception ignored) {
-                // неправильний формат – пропускаємо
+            } catch (Exception e) {
+                // Виводимо в консоль помилку, щоб знати, що формат кривий
+                System.err.println("Date parse error for task '" + t.getTitle() + "': " + t.getDeadline());
+                continue;
+            }
+
+            // Перевіряємо статус (null-safe)
+            String status = t.getStatus() != null ? t.getStatus() : "";
+            boolean isNotDone = !"DONE".equalsIgnoreCase(status);
+
+            if (isNotDone) {
+                if (deadline.isBefore(today)) {
+                    overdueCount++;
+                } else {
+                    upcomingCount++;
+                }
             }
         }
 
-        if (deadlineSummaryLabel != null) {
-            deadlineSummaryLabel.setText(
-                    "Deadlines – Overdue: " + overdue + ", Due today: " + dueToday
-            );
-        }
+        deadlineSummaryLabel.setText(
+                "Deadlines overdue: " + overdueCount + " | Upcoming: " + upcomingCount
+        );
     }
 
     @FXML
