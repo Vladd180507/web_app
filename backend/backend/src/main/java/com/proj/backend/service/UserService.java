@@ -48,8 +48,7 @@ public class UserService implements UserDetailsService  {
         User savedUser = userRepository.saveAndFlush(user);
 
         // Використовуємо savedUser для отримання ID
-        activityLogService.logActivity(savedUser.getUserId(), "USER_REGISTERED", "Новый пользователь зарегистрирован: " + name);
-
+        activityLogService.logActivity(savedUser.getUserId(), null, "REGISTER", "New user registered: " + email);
         return UserDto.fromEntity(savedUser);
     }
 
@@ -124,5 +123,4 @@ public class UserService implements UserDetailsService  {
 
         return user;
     }
-
 }

@@ -1,6 +1,6 @@
 package com.proj.backend.service;
 
-
+import com.proj.backend.dto.NotificationDto; // ✅ Додано імпорт
 import com.proj.backend.dto.TaskDto;
 import com.proj.backend.model.*;
 import com.proj.backend.repository.*;
@@ -21,7 +21,6 @@ public class TaskService {
     private final SimpMessagingTemplate messagingTemplate;
     private final ActivityLogService activityLogService;
 
-
     // ================================
     // GET TASKS BY GROUP
     // ================================
@@ -32,10 +31,9 @@ public class TaskService {
                 .toList();
     }
 
-    // ================================\
-    // CREATE TASK\
-    // ================================\
-    // Змінено creatorName -> creatorEmail для надійності
+    // ================================
+    // CREATE TASK
+    // ================================
     public TaskDto createTask(Long groupId, String title, String description,
                               String deadlineIso, String creatorEmail) {
 
@@ -57,16 +55,25 @@ public class TaskService {
 
         Task savedTask = taskRepository.save(task);
 
+        // ✅ ВИПРАВЛЕНО ЛОГ: Додано groupId (другий параметр)
         activityLogService.logActivity(
                 creator.getUserId(),
+                group.getGroupId(),
                 "TASK_CREATED",
                 "Created task: " + title + " in group " + group.getName()
         );
 
-        // ✅ ВІДПРАВЛЯЄМО СПОВІЩЕННЯ
+        // ✅ ВИПРАВЛЕНО СПОВІЩЕННЯ: Відправляємо DTO, а не просто текст
         try {
             String msg = "Нове завдання в групі " + group.getName() + ": " + title;
-            messagingTemplate.convertAndSend("/topic/notifications", msg);
+
+            NotificationDto notification = new NotificationDto(
+                    msg,
+                    creator.getUserId(),
+                    group.getGroupId()
+            );
+
+            messagingTemplate.convertAndSend("/topic/notifications", notification);
         } catch (Exception e) {
             System.err.println("WebSocket error: " + e.getMessage());
         }
@@ -84,7 +91,7 @@ public class TaskService {
     }
 
     // ================================
-    // UPDATE TASK (title, desc, deadline)
+    // UPDATE TASK
     // ================================
     public TaskDto updateTask(Long taskId, String newTitle, String newDescription, String newDeadlineIso, String editorEmail) {
         Task task = taskRepository.findById(taskId)
@@ -99,9 +106,10 @@ public class TaskService {
 
         Task savedTask = taskRepository.save(task);
 
-        // LOG
+        // ✅ ВИПРАВЛЕНО ЛОГ: Додано groupId
         activityLogService.logActivity(
                 editor.getUserId(),
+                savedTask.getGroup().getGroupId(),
                 "TASK_UPDATED",
                 "Updated task: " + savedTask.getTitle()
         );
@@ -124,9 +132,10 @@ public class TaskService {
 
         Task savedTask = taskRepository.save(task);
 
-        // LOG
+        // ✅ ВИПРАВЛЕНО ЛОГ: Додано groupId
         activityLogService.logActivity(
                 editor.getUserId(),
+                savedTask.getGroup().getGroupId(),
                 "TASK_STATUS_CHANGED",
                 "Task '" + task.getTitle() + "' changed from " + oldStatus + " to " + newStatus
         );
@@ -146,12 +155,14 @@ public class TaskService {
 
         String title = task.getTitle();
         String groupName = task.getGroup().getName();
+        Long groupId = task.getGroup().getGroupId(); // Зберігаємо ID перед видаленням
 
         taskRepository.delete(task);
 
-        // LOG
+        // ✅ ВИПРАВЛЕНО ЛОГ: Додано groupId
         activityLogService.logActivity(
                 editor.getUserId(),
+                groupId,
                 "TASK_DELETED",
                 "Deleted task: " + title + " from group " + groupName
         );

@@ -1,13 +1,11 @@
 package com.proj.backend.service;
 
-
 import com.proj.backend.dto.ActivityLogResponseDto;
-import com.proj.backend.model.*;
-import com.proj.backend.dto.GroupDto;
-import com.proj.backend.repository.GroupRepository;
-import com.proj.backend.repository.UserRepository;
-import com.proj.backend.repository.MembershipRepository;
+import com.proj.backend.model.ActivityLog;
+import com.proj.backend.model.User;
 import com.proj.backend.repository.ActivityLogRepository;
+import com.proj.backend.repository.MembershipRepository;
+import com.proj.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,36 +17,42 @@ public class ActivityLogService {
 
     private final ActivityLogRepository activityLogRepository;
     private final UserRepository userRepository;
+    private final MembershipRepository membershipRepository;
 
-    public void logActivity(Long userId, String action, String details) {
+    // ✅ ОНОВЛЕНИЙ МЕТОД ЗАПИСУ
+    public void logActivity(Long userId, Long groupId, String action, String details) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Používateľ neexistuje"));
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
         ActivityLog log = new ActivityLog();
         log.setUser(user);
+        log.setGroupId(groupId); // <-- Зберігаємо ID групи (або null)
         log.setAction(action);
         log.setDetails(details);
-        // timestamp устанавливается автоматически
 
         activityLogRepository.save(log);
     }
 
-    public List<ActivityLogResponseDto> getLogsByUser(Long userId) {
-        return activityLogRepository.findByUser_UserId(userId)
+    // ✅ ОНОВЛЕНИЙ МЕТОД ОТРИМАННЯ
+    public List<ActivityLogResponseDto> getLogsForUser(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // 1. Знаходимо всі ID груп, де юзер є учасником
+        List<Long> myGroupIds = membershipRepository.findByUserUserId(user.getUserId())
+                .stream()
+                .map(m -> m.getGroup().getGroupId())
+                .toList();
+
+        // 2. Хак для новачків: якщо списку немає, додаємо -1, щоб SQL не впав
+        if (myGroupIds.isEmpty()) {
+            myGroupIds = List.of(-1L);
+        }
+
+        // 3. Виконуємо запит
+        return activityLogRepository.findMyLogs(myGroupIds)
                 .stream()
                 .map(ActivityLogResponseDto::new)
                 .toList();
-    }
-
-    public List<ActivityLogResponseDto> getAllLogs() {
-        return activityLogRepository.findAllByOrderByTimestampDesc()
-                .stream()
-                .map(ActivityLogResponseDto::new)
-                .toList();
-    }
-
-    // Для аналитики: например, count by action или по пользователю
-    public long countActivitiesByUser(Long userId) {
-        return activityLogRepository.findByUser_UserId(userId).size();
     }
 }

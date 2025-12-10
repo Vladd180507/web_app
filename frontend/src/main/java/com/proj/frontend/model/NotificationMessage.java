@@ -1,15 +1,16 @@
 package com.proj.frontend.model;
 
 public class NotificationMessage {
-    // Використовуємо public, щоб Gson міг легко записувати, а ми - читати
     public String message;
     public Long initiatorId;
+    public Long groupId; // ✅ Додано поле для фільтрації
 
     public NotificationMessage() {
     }
 
-    public NotificationMessage(String message, Long initiatorId) {
+    public NotificationMessage(String message, Long initiatorId, Long groupId) {
         this.message = message;
         this.initiatorId = initiatorId;
+        this.groupId = groupId;
     }
 }

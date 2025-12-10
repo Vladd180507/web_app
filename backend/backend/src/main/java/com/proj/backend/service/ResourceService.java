@@ -1,5 +1,6 @@
 package com.proj.backend.service;
 
+import com.proj.backend.dto.NotificationDto; // ✅ Додано імпорт
 import com.proj.backend.dto.ResourceDTO;
 import com.proj.backend.model.Group;
 import com.proj.backend.model.Resource;
@@ -24,8 +25,6 @@ public class ResourceService {
     private final ResourceRepository resourceRepository;
     private final GroupRepository groupRepository;
     private final UserRepository userRepository;
-
-    // ✅ ДОДАНО: Оголошення поля для WebSockets (без нього код не бачив змінну)
     private final SimpMessagingTemplate messagingTemplate;
 
     @Transactional
@@ -47,13 +46,25 @@ public class ResourceService {
 
         Resource updated = resourceRepository.save(resource);
 
-        // Лог
-        activityLogService.logActivity(user.getUserId(), "RESOURCE_ADDED", "Added: " + dto.getTitle());
+        // ✅ ВИПРАВЛЕНО ЛОГ: Додано group.getGroupId() (2-й аргумент)
+        activityLogService.logActivity(
+                user.getUserId(),
+                group.getGroupId(), // ID групи
+                "RESOURCE_ADDED",
+                "Added: " + dto.getTitle()
+        );
 
-        // ✅ СПОВІЩЕННЯ
+        // ✅ ВИПРАВЛЕНО СПОВІЩЕННЯ: Відправляємо NotificationDto
         try {
             String msg = "Новий матеріал у групі " + group.getName() + ": " + dto.getTitle();
-            messagingTemplate.convertAndSend("/topic/notifications", msg);
+
+            NotificationDto notification = new NotificationDto(
+                    msg,
+                    user.getUserId(),
+                    group.getGroupId() // ID групи для фільтрації
+            );
+
+            messagingTemplate.convertAndSend("/topic/notifications", notification);
         } catch (Exception e) {
             System.err.println("WebSocket error: " + e.getMessage());
         }

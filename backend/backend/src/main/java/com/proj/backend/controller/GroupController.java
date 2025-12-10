@@ -1,14 +1,14 @@
 package com.proj.backend.controller;
 
 import com.proj.backend.dto.GroupDto;
-import com.proj.backend.model.User; // <--- Импорт User
-import com.proj.backend.repository.UserRepository; // <--- Импорт репозитория
+import com.proj.backend.model.User;
+import com.proj.backend.repository.UserRepository;
 import com.proj.backend.service.GroupService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal; // <--- Импорт для Токена
+import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 
@@ -18,11 +18,13 @@ import java.util.Map;
 public class GroupController {
 
     private final GroupService groupService;
-    private final UserRepository userRepository; // <--- 1. Добавили репозиторий
+    private final UserRepository userRepository;
 
+    // ✅ ОТРИМАТИ ТІЛЬКИ МОЇ ГРУПИ
     @GetMapping
-    public ResponseEntity<List<GroupDto>> getAll() {
-        return ResponseEntity.ok(groupService.getAllGroups());
+    public ResponseEntity<List<GroupDto>> getUserGroups(Principal principal) {
+        // principal.getName() - це email з токена
+        return ResponseEntity.ok(groupService.getUserGroups(principal.getName()));
     }
 
     @GetMapping("/{id}")
@@ -30,26 +32,19 @@ public class GroupController {
         return ResponseEntity.ok(groupService.getGroupById(id));
     }
 
-    // ✅ БЕЗОПАСНОЕ СОЗДАНИЕ ГРУППЫ
     @PostMapping
     public ResponseEntity<GroupDto> create(
             @RequestBody Map<String, Object> request,
-            Principal principal // <--- 2. Берем пользователя из токена
+            Principal principal
     ) {
         String name = (String) request.get("name");
         String description = (String) request.get("description");
-
-        // 3. Узнаем email того, кто пришел (из токена)
         String email = principal.getName();
 
-        // 4. Находим его в базе
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // 5. Передаем его НАСТОЯЩИЙ ID
-        // Поле "createdBy" из JSON мы теперь просто игнорируем!
         GroupDto created = groupService.createGroup(name, description, user.getUserId());
-
         return ResponseEntity.ok(created);
     }
 
@@ -57,13 +52,12 @@ public class GroupController {
     public ResponseEntity<GroupDto> update(
             @PathVariable Long id,
             @RequestBody Map<String, String> request,
-            java.security.Principal principal // <--- Додаємо Principal
+            Principal principal
     ) {
         String name = request.get("name");
         String description = request.get("description");
-        String email = principal.getName(); // <--- Беремо email
+        String email = principal.getName();
 
-        // Передаємо email у сервіс
         GroupDto updated = groupService.updateGroup(id, name, description, email);
         return ResponseEntity.ok(updated);
     }
@@ -71,11 +65,9 @@ public class GroupController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(
             @PathVariable Long id,
-            java.security.Principal principal // <--- Додаємо Principal
+            Principal principal
     ) {
-        String email = principal.getName(); // <--- Беремо email
-
-        // Передаємо email у сервіс
+        String email = principal.getName();
         groupService.deleteGroup(id, email);
         return ResponseEntity.noContent().build();
     }

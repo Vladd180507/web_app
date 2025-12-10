@@ -1,13 +1,8 @@
 package com.proj.backend.service;
 
 import com.proj.backend.dto.GroupDto;
-import com.proj.backend.model.Group;
-import com.proj.backend.model.Membership;
-import com.proj.backend.model.MembershipRole;
-import com.proj.backend.model.User;
-import com.proj.backend.repository.GroupRepository;
-import com.proj.backend.repository.MembershipRepository;
-import com.proj.backend.repository.UserRepository;
+import com.proj.backend.model.*;
+import com.proj.backend.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,10 +18,16 @@ public class GroupService {
     private final GroupRepository groupRepository;
     private final UserRepository userRepository;
     private final MembershipRepository membershipRepository;
+    // Репозиторії для каскадного видалення
     private final com.proj.backend.repository.ResourceRepository resourceRepository;
+    private final TaskRepository taskRepository;
 
-    public List<GroupDto> getAllGroups() {
-        return groupRepository.findAll()
+    // Отримати тільки групи користувача
+    public List<GroupDto> getUserGroups(String userEmail) {
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new RuntimeException("User not found: " + userEmail));
+
+        return groupRepository.findAllByUserId(user.getUserId())
                 .stream()
                 .map(GroupDto::fromEntity)
                 .toList();
@@ -60,9 +61,10 @@ public class GroupService {
                 .build();
         membershipRepository.save(adminMembership);
 
-        // LOG
+        // ✅ ВИПРАВЛЕНО: Додано savedGroup.getGroupId() (2-й аргумент)
         activityLogService.logActivity(
                 creator.getUserId(),
+                savedGroup.getGroupId(),
                 "GROUP_CREATED",
                 "Created group: " + name
         );
@@ -70,9 +72,10 @@ public class GroupService {
         return GroupDto.fromEntity(savedGroup);
     }
 
-    // ✅ ОНОВЛЕННЯ ГРУПИ (+ ЛОГ)
     @Transactional
     public GroupDto updateGroup(Long id, String name, String description, String editorEmail) {
+        verifyGroupAdmin(id, editorEmail);
+
         Group group = groupRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Group not found"));
 
@@ -85,9 +88,10 @@ public class GroupService {
 
         Group updated = groupRepository.save(group);
 
-        // LOG
+        // ✅ ВИПРАВЛЕНО: Додано updated.getGroupId()
         activityLogService.logActivity(
                 editor.getUserId(),
+                updated.getGroupId(),
                 "GROUP_UPDATED",
                 "Updated group details. Old name: " + oldName + ", New name: " + name
         );
@@ -97,6 +101,8 @@ public class GroupService {
 
     @Transactional
     public void deleteGroup(Long id, String editorEmail) {
+        verifyGroupAdmin(id, editorEmail);
+
         Group group = groupRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Group not found"));
 
@@ -105,20 +111,37 @@ public class GroupService {
 
         String groupName = group.getName();
 
-        // 👇 2. ВАЖЛИВО: Спочатку видаляємо всі ресурси цієї групи!
-        // (Припускаємо, що у ResourceRepository є метод deleteByGroupGroupId або ми дістаємо і видаляємо)
+        // Каскадне видалення
+        var tasks = taskRepository.findByGroupGroupId(id);
+        taskRepository.deleteAll(tasks);
+
         var resources = resourceRepository.findByGroupId(id);
         resourceRepository.deleteAll(resources);
 
-        // Також видаляємо учасників (якщо каскад не налаштований)
-        // membershipRepository.deleteByGroupGroupId(id); // якщо треба
+        var memberships = membershipRepository.findByGroupGroupId(id);
+        membershipRepository.deleteAll(memberships);
 
         groupRepository.delete(group);
 
+        // ✅ ВИПРАВЛЕНО: Додано id (ID видаленої групи)
+        // Лог залишиться, хоча група видалена (бо ми зберігаємо просто ID типу Long)
         activityLogService.logActivity(
                 editor.getUserId(),
+                id,
                 "GROUP_DELETED",
                 "Deleted group: " + groupName
         );
+    }
+
+    private void verifyGroupAdmin(Long groupId, String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Membership membership = membershipRepository.findByUserUserIdAndGroupGroupId(user.getUserId(), groupId)
+                .orElseThrow(() -> new RuntimeException("Access Denied: You are not a member of this group"));
+
+        if (membership.getRole() != MembershipRole.ADMIN) {
+            throw new RuntimeException("Access Denied: Only group ADMIN can perform this action");
+        }
     }
 }

@@ -1,6 +1,7 @@
 package com.proj.backend.service;
 
 import com.proj.backend.dto.MemberDto;
+import com.proj.backend.dto.NotificationDto; // ✅ Додано імпорт DTO
 import com.proj.backend.model.Group;
 import com.proj.backend.model.Membership;
 import com.proj.backend.model.MembershipRole;
@@ -11,7 +12,7 @@ import com.proj.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.messaging.simp.SimpMessagingTemplate; // ✅ Імпорт
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,8 +25,6 @@ public class MembershipService {
     private final GroupRepository groupRepository;
     private final UserRepository userRepository;
     private final ActivityLogService activityLogService;
-
-    // ✅ Інжектуємо месенджер
     private final SimpMessagingTemplate messagingTemplate;
 
     public List<MemberDto> getMembers(Long groupId) {
@@ -56,17 +55,25 @@ public class MembershipService {
 
         Membership saved = membershipRepository.save(membership);
 
-        // Лог
+        // ✅ ВИПРАВЛЕНО ЛОГ: Додано group.getGroupId()
         activityLogService.logActivity(
                 userId,
+                group.getGroupId(), // ID групи
                 "GROUP_JOIN",
                 "Користувач " + user.getName() + " приєднався до групи: " + group.getName()
         );
 
-        // ✅ СПОВІЩЕННЯ
+        // ✅ ВИПРАВЛЕНО СПОВІЩЕННЯ: Відправляємо NotificationDto
         try {
             String msg = "Користувач " + user.getName() + " приєднався до групи " + group.getName() + "!";
-            messagingTemplate.convertAndSend("/topic/notifications", msg);
+
+            NotificationDto notification = new NotificationDto(
+                    msg,
+                    userId,
+                    group.getGroupId() // ID групи для фільтрації
+            );
+
+            messagingTemplate.convertAndSend("/topic/notifications", notification);
         } catch (Exception e) {
             System.err.println("WebSocket error: " + e.getMessage());
         }
@@ -92,8 +99,10 @@ public class MembershipService {
 
         membershipRepository.delete(membership);
 
+        // ✅ ВИПРАВЛЕНО ЛОГ: Додано groupId
         activityLogService.logActivity(
                 userId,
+                groupId, // ID групи
                 "GROUP_LEAVE",
                 "Користувач покинув групу: " + groupName
         );

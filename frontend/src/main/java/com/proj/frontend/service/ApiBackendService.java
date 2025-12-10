@@ -459,10 +459,10 @@ public class ApiBackendService implements BackendService {
 
     @Override
     public List<ActivityLog> getActivityLogs() throws Exception {
-        // GET /api/activity-logs/user/{myId}
         if (currentUser == null) return Collections.emptyList();
 
-        HttpRequest request = authenticatedRequestBuilder(BASE_URL + "/activity-logs/user/" + currentUser.getId())
+        // ✅ URL тепер без ID юзера
+        HttpRequest request = authenticatedRequestBuilder(BASE_URL + "/activity-logs")
                 .GET()
                 .build();
 
