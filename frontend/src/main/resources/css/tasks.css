@@ -241,3 +241,36 @@
     -fx-font-weight: bold;    /* трохи виразніше */
     -fx-font-size: 14px;
 }
+
+/* === Виправлення ТІЛЬКИ випадаючого списку === */
+
+/* 1. Стилізуємо тільки контейнер, що випадає (.list-view) */
+.combo-field .list-view {
+    -fx-background-color: rgba(35, 35, 60, 0.95); /* Темний фон для списку */
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-border-color: rgba(255, 255, 255, 0.1);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 10, 0, 0, 5);
+}
+
+/* 2. Стилізуємо клітинки ТІЛЬКИ всередині випадаючого списку */
+.combo-field .list-view .list-cell {
+    -fx-text-fill: #f7f7f7;            /* Білий текст */
+    -fx-background-color: transparent; /* Прозорий фон клітинки (щоб бачити темний фон списку) */
+    -fx-padding: 4 10 4 10;
+}
+
+/* 3. Ховер і виділення ТІЛЬКИ для елементів у списку, що випадає */
+/* Важливо: додано .list-view, щоб це НЕ застосовувалося до самої кнопки */
+.combo-field .list-view .list-cell:filled:selected,
+.combo-field .list-view .list-cell:filled:hover {
+    -fx-background-color: rgba(90, 90, 200, 0.45);
+    -fx-text-fill: white;
+}
+
+/* 4. Повертаємо нормальний вигляд тексту в самій кнопці */
+/* Це гарантує, що текст у полі "OPEN" буде білим, а фон - прозорим (щоб було видно фон кнопки) */
+.combo-field .list-cell {
+    -fx-text-fill: #f7f7f7;
+    -fx-background-color: transparent;
+}
