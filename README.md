@@ -4,7 +4,10 @@
 
 This project was developed as a semester coursework assignment.
 
-![App Screenshot](frontend/src/main/resources/images/Screenshot 2025-12-10 122104.png)
+![App Screenshot](frontend/src/main/resources/images/Screenshot%202025-12-10%20122104.png)
+![App Screenshot](frontend/src/main/resources/images/Screenshot%202025-12-13%20002008.png)
+![App Screenshot](frontend/src/main/resources/images/Screenshot%202025-12-13%20002402.png)
+![App Screenshot](frontend/src/main/resources/images/Screenshot%202025-12-13%20002551.png)
 
 ## 🚀 Key Features
 
